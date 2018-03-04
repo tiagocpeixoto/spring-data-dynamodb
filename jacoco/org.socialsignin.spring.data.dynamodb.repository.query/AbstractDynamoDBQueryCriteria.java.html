@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractDynamoDBQueryCriteria.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Data DynamoDB</a> &gt; <a href="index.source.html" class="el_package">org.socialsignin.spring.data.dynamodb.repository.query</a> &gt; <span class="el_source">AbstractDynamoDBQueryCriteria.java</span></div><h1>AbstractDynamoDBQueryCriteria.java</h1><pre class="source lang-java linenums">/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.socialsignin.spring.data.dynamodb.repository.query;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.Select;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller;
+import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
+import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
+import org.socialsignin.spring.data.dynamodb.utils.SortHandler;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+/**
+ * @author Michael Lavelle
+ * @author Sebastian Just
+ */
+public abstract class AbstractDynamoDBQueryCriteria&lt;T, ID&gt; implements DynamoDBQueryCriteria&lt;T, ID&gt;, SortHandler {
+
+	protected Class&lt;T&gt; clazz;
+	private DynamoDBEntityInformation&lt;T, ID&gt; entityInformation;
+	private Map&lt;String, String&gt; attributeNamesByPropertyName;
+	private final DynamoDBMapperTableModel&lt;T&gt; tableModel;
+	private String hashKeyPropertyName;
+
+	protected MultiValueMap&lt;String, Condition&gt; attributeConditions;
+	protected MultiValueMap&lt;String, Condition&gt; propertyConditions;
+
+	protected Object hashKeyAttributeValue;
+	protected Object hashKeyPropertyValue;
+	protected String globalSecondaryIndexName;
+<span class="fc" id="L70">	protected Sort sort = Sort.unsorted();</span>
+
+	public abstract boolean isApplicableForLoad();
+
+	protected QueryRequest buildQueryRequest(String tableName, String theIndexName, String hashKeyAttributeName,
+			String rangeKeyAttributeName, String rangeKeyPropertyName, List&lt;Condition&gt; hashKeyConditions,
+			List&lt;Condition&gt; rangeKeyConditions) {
+
+		// TODO Set other query request properties based on config
+<span class="fc" id="L79">		QueryRequest queryRequest = new QueryRequest();</span>
+<span class="fc" id="L80">		queryRequest.setTableName(tableName);</span>
+<span class="fc" id="L81">		queryRequest.setIndexName(theIndexName);</span>
+
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (isApplicableForGlobalSecondaryIndex()) {</span>
+<span class="fc" id="L84">			List&lt;String&gt; allowedSortProperties = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (Entry&lt;String, List&lt;Condition&gt;&gt; singlePropertyCondition : propertyConditions.entrySet()) {</span>
+<span class="fc" id="L87">				if (entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet()</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">						.contains(singlePropertyCondition.getKey())) {</span>
+<span class="fc" id="L89">					allowedSortProperties.add(singlePropertyCondition.getKey());</span>
+				}
+<span class="fc" id="L91">			}</span>
+
+<span class="fc" id="L93">			HashMap&lt;String, Condition&gt; keyConditions = new HashMap&lt;&gt;();</span>
+
+<span class="pc bpc" id="L95" title="1 of 4 branches missed.">			if (hashKeyConditions != null &amp;&amp; hashKeyConditions.size() &gt; 0) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">				for (Condition hashKeyCondition : hashKeyConditions) {</span>
+<span class="fc" id="L97">					keyConditions.put(hashKeyAttributeName, hashKeyCondition);</span>
+<span class="fc" id="L98">					allowedSortProperties.add(hashKeyPropertyName);</span>
+<span class="fc" id="L99">				}</span>
+			}
+<span class="pc bpc" id="L101" title="1 of 4 branches missed.">			if (rangeKeyConditions != null &amp;&amp; rangeKeyConditions.size() &gt; 0) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				for (Condition rangeKeyCondition : rangeKeyConditions) {</span>
+<span class="fc" id="L103">					keyConditions.put(rangeKeyAttributeName, rangeKeyCondition);</span>
+<span class="fc" id="L104">					allowedSortProperties.add(rangeKeyPropertyName);</span>
+<span class="fc" id="L105">				}</span>
+			}
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			for (Entry&lt;String, List&lt;Condition&gt;&gt; singleAttributeConditions : attributeConditions.entrySet()) {</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				for (Condition condition : singleAttributeConditions.getValue()) {</span>
+<span class="fc" id="L111">					keyConditions.put(singleAttributeConditions.getKey(), condition);</span>
+<span class="fc" id="L112">				}</span>
+<span class="fc" id="L113">			}</span>
+
+<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (Order order : sort) {</span>
+<span class="fc" id="L116">				final String sortProperty = order.getProperty();</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (entityInformation.isGlobalIndexRangeKeyProperty(sortProperty)) {</span>
+<span class="fc" id="L118">					allowedSortProperties.add(sortProperty);</span>
+				}
+<span class="fc" id="L120">			}</span>
+
+<span class="fc" id="L122">			queryRequest.setKeyConditions(keyConditions);</span>
+<span class="fc" id="L123">			queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);</span>
+<span class="fc" id="L124">			applySortIfSpecified(queryRequest, new ArrayList&lt;&gt;(new HashSet&lt;&gt;(allowedSortProperties)));</span>
+		}
+<span class="fc" id="L126">		return queryRequest;</span>
+	}
+
+	protected void applySortIfSpecified(DynamoDBQueryExpression&lt;T&gt; queryExpression, List&lt;String&gt; permittedPropertyNames) {
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (permittedPropertyNames.size() &gt; 1) {</span>
+<span class="nc" id="L131">			throw new UnsupportedOperationException(&quot;Can only sort by at most a single range or index range key&quot;);</span>
+
+		}
+
+<span class="fc" id="L135">		boolean sortAlreadySet = false;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (Order order : sort) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (permittedPropertyNames.contains(order.getProperty())) {</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">				if (sortAlreadySet) {</span>
+<span class="nc" id="L139">					throw new UnsupportedOperationException(&quot;Sorting by multiple attributes not possible&quot;);</span>
+
+				}
+<span class="fc" id="L142">				queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));</span>
+<span class="fc" id="L143">				sortAlreadySet = true;</span>
+			} else {
+<span class="fc" id="L145">				throw new UnsupportedOperationException(&quot;Sorting only possible by &quot; + permittedPropertyNames</span>
+						+ &quot; for the criteria specified&quot;);
+			}
+<span class="fc" id="L148">		}</span>
+<span class="fc" id="L149">	}</span>
+
+	protected void applySortIfSpecified(QueryRequest queryRequest, List&lt;String&gt; permittedPropertyNames) {
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		if (permittedPropertyNames.size() &gt; 2) {</span>
+<span class="nc" id="L153">			throw new UnsupportedOperationException(&quot;Can only sort by at most a single global hash and range key&quot;);</span>
+		}
+
+<span class="fc" id="L156">		boolean sortAlreadySet = false;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (Order order : sort) {</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">			if (permittedPropertyNames.contains(order.getProperty())) {</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">				if (sortAlreadySet) {</span>
+<span class="nc" id="L160">					throw new UnsupportedOperationException(&quot;Sorting by multiple attributes not possible&quot;);</span>
+
+				}
+<span class="pc bpc" id="L163" title="1 of 4 branches missed.">				if (queryRequest.getKeyConditions().size() &gt; 1 &amp;&amp; !hasIndexHashKeyEqualCondition()) {</span>
+<span class="nc" id="L164">					throw new UnsupportedOperationException(</span>
+							&quot;Sorting for global index queries with criteria on both hash and range not possible&quot;);
+
+				}
+<span class="fc" id="L168">				queryRequest.setScanIndexForward(order.getDirection().equals(Direction.ASC));</span>
+<span class="fc" id="L169">				sortAlreadySet = true;</span>
+			} else {
+<span class="nc" id="L171">				throw new UnsupportedOperationException(&quot;Sorting only possible by &quot; + permittedPropertyNames</span>
+						+ &quot; for the criteria specified&quot;);
+			}
+<span class="fc" id="L174">		}</span>
+<span class="fc" id="L175">	}</span>
+
+	public boolean comparisonOperatorsPermittedForQuery() {
+<span class="fc" id="L178">		List&lt;ComparisonOperator&gt; comparisonOperatorsPermittedForQuery = Arrays.asList(new ComparisonOperator[] {</span>
+				ComparisonOperator.EQ, ComparisonOperator.LE, ComparisonOperator.LT, ComparisonOperator.GE,
+				ComparisonOperator.GT, ComparisonOperator.BEGINS_WITH, ComparisonOperator.BETWEEN });
+
+		// Can only query on subset of Conditions
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (Collection&lt;Condition&gt; conditions : attributeConditions.values()) {</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">			for (Condition condition : conditions) {</span>
+<span class="fc" id="L185">				if (!comparisonOperatorsPermittedForQuery</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">						.contains(ComparisonOperator.fromValue(condition.getComparisonOperator()))) {</span>
+<span class="fc" id="L187">					return false;</span>
+				}
+<span class="fc" id="L189">			}</span>
+<span class="fc" id="L190">		}</span>
+<span class="fc" id="L191">		return true;</span>
+	}
+
+	protected List&lt;Condition&gt; getHashKeyConditions() {
+<span class="fc" id="L195">		List&lt;Condition&gt; hashKeyConditions = null;</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">		if (isApplicableForGlobalSecondaryIndex()</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">				&amp;&amp; entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet().contains(getHashKeyPropertyName())) {</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			hashKeyConditions = getHashKeyAttributeValue() == null ? null : Arrays.asList(createSingleValueCondition(</span>
+<span class="fc" id="L199">					getHashKeyPropertyName(), ComparisonOperator.EQ, getHashKeyAttributeValue(), getHashKeyAttributeValue()</span>
+<span class="fc" id="L200">							.getClass(), true));</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (hashKeyConditions == null) {</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">				if (attributeConditions.containsKey(getHashKeyAttributeName())) {</span>
+<span class="fc" id="L203">					hashKeyConditions = attributeConditions.get(getHashKeyAttributeName());</span>
+				}
+
+			}
+
+		}
+<span class="fc" id="L209">		return hashKeyConditions;</span>
+	}
+
+<span class="fc" id="L212">	public AbstractDynamoDBQueryCriteria(DynamoDBEntityInformation&lt;T, ID&gt; dynamoDBEntityInformation, final DynamoDBMapperTableModel&lt;T&gt; tableModel) {</span>
+<span class="fc" id="L213">		this.clazz = dynamoDBEntityInformation.getJavaType();</span>
+<span class="fc" id="L214">		this.attributeConditions = new LinkedMultiValueMap&lt;&gt;();</span>
+<span class="fc" id="L215">		this.propertyConditions = new LinkedMultiValueMap&lt;&gt;();</span>
+<span class="fc" id="L216">		this.hashKeyPropertyName = dynamoDBEntityInformation.getHashKeyPropertyName();</span>
+<span class="fc" id="L217">		this.entityInformation = dynamoDBEntityInformation;</span>
+<span class="fc" id="L218">		this.attributeNamesByPropertyName = new HashMap&lt;&gt;();</span>
+		// TODO consider adding the DynamoDBMapper table model to DynamoDBEntityInformation instead
+<span class="fc" id="L220">		this.tableModel = tableModel;</span>
+<span class="fc" id="L221">	}</span>
+
+	private String getFirstDeclaredIndexNameForAttribute(Map&lt;String,String[]&gt; indexNamesByAttributeName,List&lt;String&gt; indexNamesToCheck,String attributeName)
+	{
+<span class="fc" id="L225">		String indexName = null;</span>
+<span class="fc" id="L226">		String[] declaredOrderedIndexNamesForAttribute = indexNamesByAttributeName.get(attributeName);</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		for (String declaredOrderedIndexNameForAttribute : declaredOrderedIndexNamesForAttribute)</span>
+		{
+<span class="pc bpc" id="L229" title="1 of 4 branches missed.">			if (indexName == null &amp;&amp; indexNamesToCheck.contains(declaredOrderedIndexNameForAttribute))</span>
+			{
+<span class="fc" id="L231">					indexName = declaredOrderedIndexNameForAttribute;</span>
+			}
+		}
+
+<span class="fc" id="L235">		return indexName;</span>
+	}
+
+	protected String getGlobalSecondaryIndexName() {
+
+
+		// Lazy evaluate the globalSecondaryIndexName if not already set
+
+		// We must have attribute conditions specified in order to use a global secondary index, otherwise return null for index name
+		// Also this method only evaluates the
+<span class="pc bpc" id="L245" title="1 of 6 branches missed.">		if (globalSecondaryIndexName == null  &amp;&amp; attributeConditions != null &amp;&amp; !attributeConditions.isEmpty())</span>
+		{
+			// Declare map of index names by attribute name which we will populate below - this will be used to determine which index to use if multiple indexes are applicable
+<span class="fc" id="L248">			Map&lt;String, String[]&gt; indexNamesByAttributeName =  new HashMap&lt;&gt;();</span>
+
+			// Declare map of attribute lists by index name which we will populate below - this will be used to determine whether we have an exact match index for specified attribute conditions
+<span class="fc" id="L251">			MultiValueMap&lt;String, String&gt; attributeListsByIndexName = new LinkedMultiValueMap&lt;&gt;();</span>
+
+			// Populate the above maps
+<span class="fc bfc" id="L254" title="All 2 branches covered.">			for (Entry&lt;String, String[]&gt; indexNamesForPropertyNameEntry : entityInformation.getGlobalSecondaryIndexNamesByPropertyName().entrySet())</span>
+			{
+<span class="fc" id="L256">				String propertyName = indexNamesForPropertyNameEntry.getKey();</span>
+<span class="fc" id="L257">				String attributeName = getAttributeName(propertyName);</span>
+<span class="fc" id="L258">				indexNamesByAttributeName.put(attributeName, indexNamesForPropertyNameEntry.getValue());</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">				for (String indexNameForPropertyName : indexNamesForPropertyNameEntry.getValue())</span>
+				{
+<span class="fc" id="L261">					attributeListsByIndexName.add(indexNameForPropertyName, attributeName);</span>
+				}
+<span class="fc" id="L263">			}</span>
+
+			// Declare lists to store matching index names
+<span class="fc" id="L266">			List&lt;String&gt; exactMatchIndexNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L267">			List&lt;String&gt; partialMatchIndexNames = new ArrayList&lt;&gt;();</span>
+
+			// Populate matching index name lists - an index is either an exact match ( the index attributes match all the specified criteria exactly)
+			// or a partial match ( the properties for the specified criteria are contained within the property set for an index )
+<span class="fc bfc" id="L271" title="All 2 branches covered.">			for (Entry&lt;String, List&lt;String&gt;&gt; attributeListForIndexNameEntry : attributeListsByIndexName.entrySet())</span>
+			{
+<span class="fc" id="L273">				String indexNameForAttributeList = attributeListForIndexNameEntry.getKey();</span>
+<span class="fc" id="L274">				List&lt;String&gt; attributeList = attributeListForIndexNameEntry.getValue();</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">				if (attributeList.containsAll(attributeConditions.keySet()))</span>
+				{
+<span class="fc bfc" id="L277" title="All 2 branches covered.">					if (attributeConditions.keySet().containsAll(attributeList))</span>
+					{
+<span class="fc" id="L279">						exactMatchIndexNames.add(indexNameForAttributeList);</span>
+					}
+					else
+					{
+<span class="fc" id="L283">						partialMatchIndexNames.add(indexNameForAttributeList);</span>
+					}
+				}
+<span class="fc" id="L286">			}</span>
+
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">			if (exactMatchIndexNames.size() &gt; 1)</span>
+			{
+<span class="nc" id="L290">				throw new RuntimeException(&quot;Multiple indexes defined on same attribute set:&quot; + attributeConditions.keySet());</span>
+			}
+<span class="fc bfc" id="L292" title="All 2 branches covered.">			else if (exactMatchIndexNames.size() == 1)</span>
+			{
+<span class="fc" id="L294">				globalSecondaryIndexName = exactMatchIndexNames.get(0);</span>
+			}
+<span class="fc bfc" id="L296" title="All 2 branches covered.">			else if (partialMatchIndexNames.size() &gt; 1)</span>
+			{
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">				if (attributeConditions.size() == 1)</span>
+				{
+<span class="fc" id="L300">					globalSecondaryIndexName = getFirstDeclaredIndexNameForAttribute(indexNamesByAttributeName, partialMatchIndexNames, attributeConditions.keySet().iterator().next());</span>
+				}
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">				if (globalSecondaryIndexName == null)</span>
+				{
+<span class="nc" id="L304">					globalSecondaryIndexName = partialMatchIndexNames.get(0);</span>
+				}
+			}
+<span class="fc bfc" id="L307" title="All 2 branches covered.">			else if (partialMatchIndexNames.size() == 1)</span>
+			{
+<span class="fc" id="L309">				globalSecondaryIndexName = partialMatchIndexNames.get(0);</span>
+			}
+		}
+<span class="fc" id="L312">		return globalSecondaryIndexName;</span>
+	}
+	protected boolean isHashKeyProperty(String propertyName) {
+<span class="fc" id="L315">		return hashKeyPropertyName.equals(propertyName);</span>
+	}
+
+	protected String getHashKeyPropertyName() {
+<span class="fc" id="L319">		return hashKeyPropertyName;</span>
+	}
+
+	protected String getHashKeyAttributeName() {
+<span class="fc" id="L323">		return getAttributeName(getHashKeyPropertyName());</span>
+	}
+
+
+	protected boolean hasIndexHashKeyEqualCondition()
+	{
+<span class="fc" id="L329">		boolean hasIndexHashKeyEqualCondition = false;</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">		for (Map.Entry&lt;String, List&lt;Condition&gt;&gt; propertyConditionList : propertyConditions.entrySet())</span>
+		{
+<span class="fc bfc" id="L332" title="All 2 branches covered.">			if (entityInformation.isGlobalIndexHashKeyProperty(propertyConditionList.getKey()))</span>
+			{
+<span class="fc bfc" id="L334" title="All 2 branches covered.">				for (Condition condition : propertyConditionList.getValue())</span>
+				{
+<span class="fc bfc" id="L336" title="All 2 branches covered.">					if ( condition.getComparisonOperator().equals(ComparisonOperator.EQ.name()))</span>
+					{
+<span class="fc" id="L338">							 	hasIndexHashKeyEqualCondition = true;</span>
+					}
+<span class="fc" id="L340">				}</span>
+			}
+<span class="fc" id="L342">		}</span>
+<span class="fc bfc" id="L343" title="All 4 branches covered.">		if (hashKeyAttributeValue != null &amp;&amp; entityInformation.isGlobalIndexHashKeyProperty(hashKeyPropertyName))</span>
+		{
+<span class="fc" id="L345">			hasIndexHashKeyEqualCondition = true;</span>
+		}
+<span class="fc" id="L347">		return hasIndexHashKeyEqualCondition;</span>
+	}
+
+	protected boolean hasIndexRangeKeyCondition()
+	{
+<span class="fc" id="L352">		boolean hasIndexRangeKeyCondition = false;</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		for (Map.Entry&lt;String, List&lt;Condition&gt;&gt; propertyConditionList : propertyConditions.entrySet())</span>
+		{
+<span class="fc bfc" id="L355" title="All 2 branches covered.">			if (entityInformation.isGlobalIndexRangeKeyProperty(propertyConditionList.getKey()))</span>
+			{
+<span class="fc" id="L357">				hasIndexRangeKeyCondition = true;</span>
+			}
+<span class="fc" id="L359">		}</span>
+<span class="fc bfc" id="L360" title="All 4 branches covered.">		if (hashKeyAttributeValue != null &amp;&amp; entityInformation.isGlobalIndexRangeKeyProperty(hashKeyPropertyName))</span>
+		{
+<span class="fc" id="L362">			hasIndexRangeKeyCondition = true;</span>
+		}
+<span class="fc" id="L364">		return hasIndexRangeKeyCondition;</span>
+	}
+	protected boolean isApplicableForGlobalSecondaryIndex() {
+<span class="fc bfc" id="L367" title="All 2 branches covered.">		boolean global = this.getGlobalSecondaryIndexName() != null;</span>
+<span class="fc bfc" id="L368" title="All 4 branches covered.">		if (global &amp;&amp; getHashKeyAttributeValue() != null</span>
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">				&amp;&amp; !entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet().contains(getHashKeyPropertyName())) {</span>
+<span class="nc" id="L370">			return false;</span>
+		}
+
+<span class="fc" id="L373">		int attributeConditionCount = attributeConditions.keySet().size();</span>
+<span class="pc bpc" id="L374" title="2 of 8 branches missed.">		boolean attributeConditionsAppropriate =  hasIndexHashKeyEqualCondition() &amp;&amp; (attributeConditionCount  == 1 || (attributeConditionCount == 2 &amp;&amp; hasIndexRangeKeyCondition()));</span>
+<span class="pc bpc" id="L375" title="2 of 8 branches missed.">		return global &amp;&amp; (attributeConditionCount == 0 || attributeConditionsAppropriate) &amp;&amp; comparisonOperatorsPermittedForQuery();</span>
+
+	}
+
+	public DynamoDBQueryCriteria&lt;T, ID&gt; withHashKeyEquals(Object value) {
+<span class="fc" id="L380">		Assert.notNull(value, &quot;Creating conditions on null hash keys not supported: please specify a value for '&quot;</span>
+<span class="fc" id="L381">				+ getHashKeyPropertyName() + &quot;'&quot;);</span>
+
+<span class="fc" id="L383">		hashKeyAttributeValue = getPropertyAttributeValue(getHashKeyPropertyName(), value);</span>
+<span class="fc" id="L384">		hashKeyPropertyValue = value;</span>
+<span class="fc" id="L385">		return this;</span>
+	}
+
+	public boolean isHashKeySpecified() {
+<span class="fc bfc" id="L389" title="All 2 branches covered.">		return getHashKeyAttributeValue() != null;</span>
+	}
+
+	public Object getHashKeyAttributeValue() {
+<span class="fc" id="L393">		return hashKeyAttributeValue;</span>
+	}
+
+	public Object getHashKeyPropertyValue() {
+<span class="fc" id="L397">		return hashKeyPropertyValue;</span>
+	}
+
+	protected String getAttributeName(String propertyName) {
+<span class="fc" id="L401">		String attributeName = attributeNamesByPropertyName.get(propertyName);</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">		if (attributeName == null) {</span>
+<span class="fc" id="L403">			attributeName = entityInformation.getOverriddenAttributeName(propertyName).orElse(propertyName);</span>
+<span class="fc" id="L404">			attributeNamesByPropertyName.put(propertyName, attributeName);</span>
+		}
+<span class="fc" id="L406">		return attributeName;</span>
+
+	}
+
+	@Override
+	public DynamoDBQueryCriteria&lt;T, ID&gt; withPropertyBetween(String propertyName, Object value1, Object value2, Class&lt;?&gt; type) {
+<span class="fc" id="L412">		Condition condition = createCollectionCondition(propertyName, ComparisonOperator.BETWEEN, Arrays.asList(value1, value2),</span>
+				type);
+<span class="fc" id="L414">		return withCondition(propertyName, condition);</span>
+	}
+
+	@Override
+	public DynamoDBQueryCriteria&lt;T, ID&gt; withPropertyIn(String propertyName, Iterable&lt;?&gt; value, Class&lt;?&gt; propertyType) {
+
+<span class="fc" id="L420">		Condition condition = createCollectionCondition(propertyName, ComparisonOperator.IN, value, propertyType);</span>
+<span class="fc" id="L421">		return withCondition(propertyName, condition);</span>
+	}
+
+	@Override
+	public DynamoDBQueryCriteria&lt;T, ID&gt; withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
+			Object value, Class&lt;?&gt; propertyType) {
+<span class="pc bpc" id="L427" title="1 of 2 branches missed.">		if (comparisonOperator.equals(ComparisonOperator.EQ)) {</span>
+<span class="nc" id="L428">			return withPropertyEquals(propertyName, value, propertyType);</span>
+		} else {
+<span class="fc" id="L430">			Condition condition = createSingleValueCondition(propertyName, comparisonOperator, value, propertyType, false);</span>
+<span class="fc" id="L431">			return withCondition(propertyName, condition);</span>
+		}
+	}
+
+	@Override
+	public Query&lt;T&gt; buildQuery(DynamoDBOperations dynamoDBOperations) {
+<span class="fc bfc" id="L437" title="All 2 branches covered.">		if (isApplicableForLoad()) {</span>
+<span class="fc" id="L438">			return buildSingleEntityLoadQuery(dynamoDBOperations);</span>
+		} else {
+<span class="fc" id="L440">			return buildFinderQuery(dynamoDBOperations);</span>
+		}
+	}
+
+	@Override
+	public Query&lt;Long&gt; buildCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
+<span class="pc bpc" id="L446" title="1 of 2 branches missed.">		if (isApplicableForLoad()) {</span>
+<span class="nc" id="L447">			return buildSingleEntityCountQuery(dynamoDBOperations);</span>
+		} else {
+<span class="fc" id="L449">			return buildFinderCountQuery(dynamoDBOperations,pageQuery);</span>
+		}
+	}
+
+
+	protected abstract Query&lt;T&gt; buildSingleEntityLoadQuery(DynamoDBOperations dynamoDBOperations);
+
+	protected abstract Query&lt;Long&gt; buildSingleEntityCountQuery(DynamoDBOperations dynamoDBOperations);
+
+
+	protected abstract Query&lt;T&gt; buildFinderQuery(DynamoDBOperations dynamoDBOperations);
+
+	protected abstract Query&lt;Long&gt; buildFinderCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery);
+
+
+	protected abstract boolean isOnlyHashKeySpecified();
+
+	@Override
+	public DynamoDBQueryCriteria&lt;T, ID&gt; withNoValuedCriteria(String propertyName, ComparisonOperator comparisonOperator) {
+<span class="nc" id="L468">		Condition condition = createNoValueCondition(propertyName, comparisonOperator);</span>
+<span class="nc" id="L469">		return withCondition(propertyName, condition);</span>
+
+	}
+
+	public DynamoDBQueryCriteria&lt;T, ID&gt; withCondition(String propertyName, Condition condition) {
+<span class="fc" id="L474">		attributeConditions.add(getAttributeName(propertyName), condition);</span>
+<span class="fc" id="L475">		propertyConditions.add(propertyName, condition);</span>
+
+<span class="fc" id="L477">		return this;</span>
+	}
+
+    @SuppressWarnings({&quot;deprecation&quot;, &quot;unchecked&quot;})
+    protected &lt;V extends Object&gt; Object getPropertyAttributeValue(final String propertyName, final V value) {
+        // TODO consider removing DynamoDBMarshaller code altogether as table model will handle accordingly
+<span class="fc" id="L483">        final DynamoDBMarshaller&lt;V&gt; marshaller = (DynamoDBMarshaller&lt;V&gt;) entityInformation.getMarshallerForProperty(propertyName);</span>
+
+<span class="fc bfc" id="L485" title="All 2 branches covered.">        if (marshaller != null) {</span>
+<span class="fc" id="L486">            return marshaller.marshall(value);</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">        } else if (tableModel != null) {  // purely here for testing as DynamoDBMapperTableModel cannot be mocked using Mockito</span>
+
+<span class="fc" id="L489">			String attributeName = getAttributeName(propertyName);</span>
+
+<span class="fc" id="L491">			DynamoDBMapperFieldModel&lt;T,Object&gt; fieldModel = tableModel.field(attributeName);</span>
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">            if (fieldModel != null) {</span>
+<span class="fc" id="L493">                return fieldModel.convert(value);</span>
+            }
+        }
+
+<span class="fc" id="L497">        return value;</span>
+    }
+
+	protected &lt;V&gt; Condition createNoValueCondition(String propertyName, ComparisonOperator comparisonOperator) {
+
+<span class="nc" id="L502">		Condition condition = new Condition().withComparisonOperator(comparisonOperator);</span>
+
+<span class="nc" id="L504">		return condition;</span>
+	}
+
+	private List&lt;String&gt; getNumberListAsStringList(List&lt;Number&gt; numberList) {
+<span class="nc" id="L508">		List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L509" title="All 2 branches missed.">		for (Number number : numberList) {</span>
+<span class="nc bnc" id="L510" title="All 2 branches missed.">			if (number != null) {</span>
+<span class="nc" id="L511">				list.add(number.toString());</span>
+			} else {
+<span class="nc" id="L513">				list.add(null);</span>
+			}
+<span class="nc" id="L515">		}</span>
+<span class="nc" id="L516">		return list;</span>
+	}
+
+	private List&lt;String&gt; getDateListAsStringList(List&lt;Date&gt; dateList) {
+<span class="fc" id="L520">		DynamoDBMarshaller&lt;Date&gt; marshaller = new Date2IsoDynamoDBMarshaller();</span>
+<span class="fc" id="L521">		List&lt;String&gt; list = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">		for (Date date : dateList) {</span>
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">			if (date != null) {</span>
+<span class="fc" id="L524">				list.add(marshaller.marshall(date));</span>
+			} else {
+<span class="nc" id="L526">				list.add(null);</span>
+			}
+<span class="fc" id="L528">		}</span>
+<span class="fc" id="L529">		return list;</span>
+	}
+
+	private List&lt;String&gt; getInstantListAsStringList(List&lt;Instant&gt; dateList) {
+<span class="nc" id="L533">		DynamoDBMarshaller&lt;Instant&gt; marshaller = new Instant2IsoDynamoDBMarshaller();</span>
+<span class="nc" id="L534">		List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L535" title="All 2 branches missed.">		for (Instant date : dateList) {</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">			if (date != null) {</span>
+<span class="nc" id="L537">				list.add(marshaller.marshall(date));</span>
+			} else {
+<span class="nc" id="L539">				list.add(null);</span>
+			}
+<span class="nc" id="L541">		}</span>
+<span class="nc" id="L542">		return list;</span>
+	}
+	
+	private List&lt;String&gt; getBooleanListAsStringList(List&lt;Boolean&gt; booleanList) {
+<span class="nc" id="L546">		List&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L547" title="All 2 branches missed.">		for (Boolean booleanValue : booleanList) {</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">			if (booleanValue != null) {</span>
+<span class="nc bnc" id="L549" title="All 2 branches missed.">				list.add(booleanValue.booleanValue() ? &quot;1&quot; : &quot;0&quot;);</span>
+			} else {
+<span class="nc" id="L551">				list.add(null);</span>
+			}
+<span class="nc" id="L553">		}</span>
+<span class="nc" id="L554">		return list;</span>
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private &lt;P&gt; List&lt;P&gt; getAttributeValueAsList(Object attributeValue) {
+<span class="fc" id="L559">		boolean isIterable = ClassUtils.isAssignable(Iterable.class, attributeValue.getClass());</span>
+<span class="fc bfc" id="L560" title="All 2 branches covered.">		if (isIterable) {</span>
+<span class="fc" id="L561">			List&lt;P&gt; attributeValueAsList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L562">			Iterable&lt;P&gt; iterable = (Iterable&lt;P&gt;) attributeValue;</span>
+<span class="fc bfc" id="L563" title="All 2 branches covered.">			for (P attributeValueElement : iterable) {</span>
+<span class="fc" id="L564">				attributeValueAsList.add(attributeValueElement);</span>
+<span class="fc" id="L565">			}</span>
+<span class="fc" id="L566">			return attributeValueAsList;</span>
+		}
+<span class="fc" id="L568">		return null;</span>
+	}
+
+	protected &lt;P&gt; List&lt;AttributeValue&gt; addAttributeValue(List&lt;AttributeValue&gt; attributeValueList, Object attributeValue,
+			String propertyName, Class&lt;P&gt; propertyType, boolean expandCollectionValues) {
+<span class="fc" id="L573">		AttributeValue attributeValueObject = new AttributeValue();</span>
+
+<span class="fc bfc" id="L575" title="All 2 branches covered.">		if (ClassUtils.isAssignable(String.class, propertyType)) {</span>
+<span class="fc" id="L576">			List&lt;String&gt; attributeValueAsList = getAttributeValueAsList(attributeValue);</span>
+<span class="fc bfc" id="L577" title="All 4 branches covered.">			if (expandCollectionValues &amp;&amp; attributeValueAsList != null) {</span>
+<span class="fc" id="L578">				attributeValueObject.withSS(attributeValueAsList);</span>
+			} else {
+<span class="fc" id="L580">				attributeValueObject.withS((String) attributeValue);</span>
+			}
+<span class="fc bfc" id="L582" title="All 2 branches covered.">		} else if (ClassUtils.isAssignable(Number.class, propertyType)) {</span>
+
+<span class="fc" id="L584">			List&lt;Number&gt; attributeValueAsList = getAttributeValueAsList(attributeValue);</span>
+<span class="pc bpc" id="L585" title="2 of 4 branches missed.">			if (expandCollectionValues &amp;&amp; attributeValueAsList != null) {</span>
+<span class="nc" id="L586">				List&lt;String&gt; attributeValueAsStringList = getNumberListAsStringList(attributeValueAsList);</span>
+<span class="nc" id="L587">				attributeValueObject.withNS(attributeValueAsStringList);</span>
+<span class="nc" id="L588">			} else {</span>
+<span class="fc" id="L589">				attributeValueObject.withN(attributeValue.toString());</span>
+			}
+<span class="pc bpc" id="L591" title="1 of 2 branches missed.">		} else if (ClassUtils.isAssignable(Boolean.class, propertyType)) {</span>
+<span class="nc" id="L592">			List&lt;Boolean&gt; attributeValueAsList = getAttributeValueAsList(attributeValue);</span>
+<span class="nc bnc" id="L593" title="All 4 branches missed.">			if (expandCollectionValues &amp;&amp; attributeValueAsList != null) {</span>
+<span class="nc" id="L594">				List&lt;String&gt; attributeValueAsStringList = getBooleanListAsStringList(attributeValueAsList);</span>
+<span class="nc" id="L595">				attributeValueObject.withNS(attributeValueAsStringList);</span>
+<span class="nc" id="L596">			} else {</span>
+<span class="nc" id="L597">				boolean boolValue = ((Boolean) attributeValue).booleanValue();</span>
+<span class="nc bnc" id="L598" title="All 2 branches missed.">				attributeValueObject.withN(boolValue ? &quot;1&quot; : &quot;0&quot;);</span>
+			}
+<span class="pc bpc" id="L600" title="1 of 2 branches missed.">		} else if (ClassUtils.isAssignable(Date.class, propertyType)) {</span>
+<span class="fc" id="L601">			List&lt;Date&gt; attributeValueAsList = getAttributeValueAsList(attributeValue);</span>
+<span class="fc bfc" id="L602" title="All 4 branches covered.">			if (expandCollectionValues &amp;&amp; attributeValueAsList != null) {</span>
+<span class="fc" id="L603">				List&lt;String&gt; attributeValueAsStringList = getDateListAsStringList(attributeValueAsList);</span>
+<span class="fc" id="L604">				attributeValueObject.withSS(attributeValueAsStringList);</span>
+<span class="fc" id="L605">			} else {</span>
+<span class="fc" id="L606">				Date date = (Date) attributeValue;</span>
+<span class="fc" id="L607">				String marshalledDate = new Date2IsoDynamoDBMarshaller().marshall(date);</span>
+<span class="fc" id="L608">				attributeValueObject.withS(marshalledDate);</span>
+			}
+<span class="pc bnc" id="L610" title="All 2 branches missed.">		} else if (ClassUtils.isAssignable(Instant.class, propertyType)) {</span>
+<span class="nc" id="L611">			List&lt;Instant&gt; attributeValueAsList = getAttributeValueAsList(attributeValue);</span>
+<span class="nc bnc" id="L612" title="All 4 branches missed.">			if (expandCollectionValues &amp;&amp; attributeValueAsList != null) {</span>
+<span class="nc" id="L613">				List&lt;String&gt; attributeValueAsStringList = getInstantListAsStringList(attributeValueAsList);</span>
+<span class="nc" id="L614">				attributeValueObject.withSS(attributeValueAsStringList);</span>
+<span class="nc" id="L615">			} else {</span>
+<span class="nc" id="L616">				Instant date = (Instant) attributeValue;</span>
+<span class="nc" id="L617">				String marshalledDate = new Instant2IsoDynamoDBMarshaller().marshall(date);</span>
+<span class="nc" id="L618">				attributeValueObject.withS(marshalledDate);</span>
+			}
+<span class="nc" id="L620">		} else {</span>
+<span class="nc" id="L621">			throw new RuntimeException(&quot;Cannot create condition for type:&quot; + attributeValue.getClass()</span>
+					+ &quot; property conditions must be String,Number or Boolean, or have a DynamoDBMarshaller configured&quot;);
+		}
+<span class="fc" id="L624">		attributeValueList.add(attributeValueObject);</span>
+
+<span class="fc" id="L626">		return attributeValueList;</span>
+	}
+
+	protected Condition createSingleValueCondition(String propertyName, ComparisonOperator comparisonOperator, Object o,
+			Class&lt;?&gt; propertyType, boolean alreadyMarshalledIfRequired) {
+
+<span class="fc" id="L632">		Assert.notNull(o, &quot;Creating conditions on null property values not supported: please specify a value for '&quot;</span>
+				+ propertyName + &quot;'&quot;);
+
+<span class="fc" id="L635">		List&lt;AttributeValue&gt; attributeValueList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L636" title="All 2 branches covered.">		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName, o) : o;</span>
+<span class="fc bfc" id="L637" title="All 2 branches covered.">		if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {</span>
+<span class="fc" id="L638">		    attributeValueList.add((AttributeValue) attributeValue);</span>
+		} else {
+<span class="fc bfc" id="L640" title="All 4 branches covered.">		    boolean marshalled = !alreadyMarshalledIfRequired &amp;&amp; attributeValue != o</span>
+<span class="pc bpc" id="L641" title="1 of 2 branches missed.">		        &amp;&amp; !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);</span>
+
+<span class="fc bfc" id="L643" title="All 2 branches covered.">		    Class&lt;?&gt; targetPropertyType = marshalled ? String.class : propertyType;</span>
+<span class="fc" id="L644">		    attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName, targetPropertyType, true);</span>
+		}
+
+<span class="fc" id="L647">		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);</span>
+	}
+
+	protected Condition createCollectionCondition(String propertyName, ComparisonOperator comparisonOperator, Iterable&lt;?&gt; o,
+			Class&lt;?&gt; propertyType) {
+
+<span class="fc" id="L653">		Assert.notNull(o, &quot;Creating conditions on null property values not supported: please specify a value for '&quot;</span>
+				+ propertyName + &quot;'&quot;);
+<span class="fc" id="L655">		List&lt;AttributeValue&gt; attributeValueList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L656">		boolean marshalled = false;</span>
+<span class="fc bfc" id="L657" title="All 2 branches covered.">		for (Object object : o) {</span>
+<span class="fc" id="L658">			Object attributeValue = getPropertyAttributeValue(propertyName, object);</span>
+<span class="fc bfc" id="L659" title="All 2 branches covered.">	        if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {</span>
+<span class="fc" id="L660">	            attributeValueList.add((AttributeValue) attributeValue);</span>
+	        } else {
+<span class="pc bpc" id="L662" title="1 of 2 branches missed.">	            if (attributeValue != null) {</span>
+<span class="pc bpc" id="L663" title="3 of 4 branches missed.">	                marshalled = attributeValue != object &amp;&amp; !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);</span>
+	            }
+<span class="pc bpc" id="L665" title="1 of 2 branches missed.">	            Class&lt;?&gt; targetPropertyType = marshalled ? String.class : propertyType;</span>
+<span class="fc" id="L666">	            attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName, targetPropertyType, false);</span>
+	        }
+<span class="fc" id="L668">		}</span>
+
+<span class="fc" id="L670">		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);</span>
+
+	}
+
+	@Override
+	public DynamoDBQueryCriteria&lt;T, ID&gt; withSort(Sort sort) {
+<span class="fc" id="L676">		this.sort = sort;</span>
+<span class="fc" id="L677">		return this;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
