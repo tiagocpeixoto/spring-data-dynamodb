@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -155,6 +156,15 @@ public class CRUDOperationsIT {
 		userRepository.deleteByIdAndName("u1", name1);
 		Optional<User> actualUser = userRepository.findById("u1");
 		assertFalse("User should have been deleted!", actualUser.isPresent());
+	}
+
+	@Test
+	public void testSortingWithNull() {
+
+		// userRepository.findAll();
+		// userRepository.findAllByNumberOfPlaylists(3);
+		userRepository.findAllByOrderByName();
+
 	}
 
 }

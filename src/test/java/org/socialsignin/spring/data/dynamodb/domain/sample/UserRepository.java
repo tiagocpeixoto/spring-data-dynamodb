@@ -54,4 +54,5 @@ public interface UserRepository extends CrudRepository<User, String> {
 	@EnableScan
 	User findByNameAndLeaveDate(String name, Instant leaveDate);
 
+	List<User> findAllByOrderByName();
 }
