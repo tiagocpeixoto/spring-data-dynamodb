@@ -35,7 +35,7 @@ public class DynamoDBQueryCreator<T, ID> extends AbstractDynamoDBQueryCreator<T,
 	@Override
 	protected Query<T> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
 		if (criteria == null) {
-			int i = 2;
+			criteria = createCriteria();
 		}
 		criteria.withSort(sort);
 		criteria.withProjection(projection);

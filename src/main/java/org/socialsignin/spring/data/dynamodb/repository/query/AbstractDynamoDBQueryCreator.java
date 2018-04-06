@@ -64,13 +64,18 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID, R>
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
 
-	@Override
-	protected DynamoDBQueryCriteria<T, ID> create(Part part, Iterator<Object> iterator) {
+	protected DynamoDBQueryCriteria<T, ID> createCriteria() {
 		final DynamoDBMapperTableModel<T> tableModel = dynamoDBOperations.getTableModel(entityMetadata.getJavaType());
 		DynamoDBQueryCriteria<T, ID> criteria = entityMetadata.isRangeKeyAware()
-				? new DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID>(
+				? new DynamoDBEntityWithHashAndRangeKeyCriteria<>(
 						(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata, tableModel)
 				: new DynamoDBEntityWithHashKeyOnlyCriteria<>(entityMetadata, tableModel);
+		return criteria;
+	}
+
+	@Override
+	protected DynamoDBQueryCriteria<T, ID> create(Part part, Iterator<Object> iterator) {
+		DynamoDBQueryCriteria<T, ID> criteria = createCriteria();
 		return addCriteria(criteria, part, iterator);
 	}
 

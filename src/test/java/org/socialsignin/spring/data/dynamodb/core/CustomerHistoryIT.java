@@ -19,17 +19,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerHistory;
 import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerHistoryRepository;
+import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
 import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
+import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CustomerHistoryIT.TestAppConfig.class, DynamoDBResource.class})
+@ContextConfiguration(classes = {CustomerHistoryIT.TestAppConfig.class, DynamoDBLocalResource.class})
+@TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
+@TableCreationListener.DynamoDBCreateTable(entityClasses = {CustomerHistory.class})
 public class CustomerHistoryIT {
 
 	@Configuration
@@ -38,7 +47,7 @@ public class CustomerHistoryIT {
 	}
 
 	@Autowired
-	CustomerHistoryRepository customerHistoryRepository;
+	private CustomerHistoryRepository customerHistoryRepository;
 
 	@Test
 	public void saveAndGSITest() {
@@ -55,5 +64,16 @@ public class CustomerHistoryIT {
 		assertEquals(expected.getId(), actual.getId());
 		assertEquals(expected.getCreateDt(), actual.getCreateDt());
 		assertEquals(expected.getTag(), actual.getTag());
+	}
+
+	@Test
+	public void testSortingWithNull() {
+
+		// List<CustomerHistory> all = customerHistoryRepository.findAll();
+
+		List<CustomerHistory> allByIdSorted = customerHistoryRepository.findByIdOrderByCreateDtDesc("id");
+
+		List<CustomerHistory> sortedAll = customerHistoryRepository.findAllByOrderByCreateDt();
+
 	}
 }

@@ -15,10 +15,17 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
 
 public interface CustomerHistoryRepository extends CrudRepository<CustomerHistory, CustomerHistoryId> {
 
 	CustomerHistory findByTag(String tag);
 
+	@EnableScan
+	List<CustomerHistory> findAll();
+	List<CustomerHistory> findByIdOrderByCreateDtDesc(String id);
+	List<CustomerHistory> findAllByOrderByCreateDt();
 }

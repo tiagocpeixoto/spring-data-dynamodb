@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * @author Michael Lavelle
@@ -132,13 +133,14 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 				queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
 			}
 
-			applySortIfSpecified(queryRequest, new ArrayList<>(new HashSet<>(allowedSortProperties)));
+			applySortIfSpecified(
+					order -> queryRequest.setScanIndexForward(order.getDirection().equals(Sort.Direction.ASC)),
+					new ArrayList<>(new HashSet<>(allowedSortProperties)));
 		}
 		return queryRequest;
 	}
 
-	protected void applySortIfSpecified(DynamoDBQueryExpression<T> queryExpression,
-			List<String> permittedPropertyNames) {
+	protected void applySortIfSpecified(Consumer<Order> applyOn, List<String> permittedPropertyNames) {
 		if (permittedPropertyNames.size() > 1) {
 			throw new UnsupportedOperationException("Can only sort by at most a single range or index range key");
 
@@ -151,33 +153,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 					throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
 
 				}
-				queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
-				sortAlreadySet = true;
-			} else {
-				throw new UnsupportedOperationException(
-						"Sorting only possible by " + permittedPropertyNames + " for the criteria specified");
-			}
-		}
-	}
-
-	protected void applySortIfSpecified(QueryRequest queryRequest, List<String> permittedPropertyNames) {
-		if (permittedPropertyNames.size() > 2) {
-			throw new UnsupportedOperationException("Can only sort by at most a single global hash and range key");
-		}
-
-		boolean sortAlreadySet = false;
-		for (Order order : sort) {
-			if (permittedPropertyNames.contains(order.getProperty())) {
-				if (sortAlreadySet) {
-					throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
-
-				}
-				if (queryRequest.getKeyConditions().size() > 1 && !hasIndexHashKeyEqualCondition()) {
-					throw new UnsupportedOperationException(
-							"Sorting for global index queries with criteria on both hash and range not possible");
-
-				}
-				queryRequest.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+				applyOn.accept(order);
 				sortAlreadySet = true;
 			} else {
 				throw new UnsupportedOperationException(

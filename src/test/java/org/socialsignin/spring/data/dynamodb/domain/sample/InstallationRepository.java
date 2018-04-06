@@ -21,6 +21,6 @@ import java.util.List;
 
 public interface InstallationRepository extends CrudRepository<Installation, String> {
 
-	public List<Installation> findBySystemIdOrderByUpdatedAtDesc(String systemId);
+	List<Installation> findBySystemIdOrderByUpdatedAtDesc(String systemId);
 
 }

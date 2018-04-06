@@ -91,8 +91,8 @@ public class DynamoDBQueryLookupStrategy {
 		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
 				ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
-				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations,
-						new DynamoDBQueryMethod<T, ID>(method, metadata, factory));
+				return new PartTreeDynamoDBQuery<>(dynamoDBOperations,
+						new DynamoDBQueryMethod<>(method, metadata, factory));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
 						String.format("Could not create query metamodel for method %s!", method.toString()), e);
@@ -125,8 +125,8 @@ public class DynamoDBQueryLookupStrategy {
 
 	/**
 	 * {@link QueryLookupStrategy} to try to detect a declared query first (
-	 * {@link org.springframework.data.jpa.repository.Query}. In case none is found
-	 * we fall back on query creation.
+	 * {@link org.socialsignin.spring.data.dynamodb.repository.Query}. In case none
+	 * is found we fall back on query creation.
 	 *
 	 * @author Michael Lavelle
 	 * @author Sebastian Just

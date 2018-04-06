@@ -48,7 +48,7 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBLocalResource.class, CRUDOperationsIT.TestAppConfig.class})
 @TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
-@DynamoDBCreateTable(entityClasses = {User.class})
+@DynamoDBCreateTable(entityClasses = {CustomerHistory.class})
 public class CRUDOperationsIT {
 
 	@Configuration
@@ -157,14 +157,4 @@ public class CRUDOperationsIT {
 		Optional<User> actualUser = userRepository.findById("u1");
 		assertFalse("User should have been deleted!", actualUser.isPresent());
 	}
-
-	@Test
-	public void testSortingWithNull() {
-
-		// userRepository.findAll();
-		// userRepository.findAllByNumberOfPlaylists(3);
-		userRepository.findAllByOrderByName();
-
-	}
-
 }

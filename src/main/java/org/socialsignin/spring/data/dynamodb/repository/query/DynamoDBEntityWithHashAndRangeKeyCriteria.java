@@ -33,6 +33,7 @@ import org.socialsignin.spring.data.dynamodb.query.QueryRequestCountQuery;
 import org.socialsignin.spring.data.dynamodb.query.ScanExpressionCountQuery;
 import org.socialsignin.spring.data.dynamodb.query.SingleEntityLoadByHashAndRangeKeyQuery;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -154,7 +155,9 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 			Condition rangeKeyCondition = createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ,
 					getRangeKeyAttributeValue(), getRangeKeyAttributeValue().getClass(), true);
 			queryExpression.withRangeKeyCondition(getRangeKeyAttributeName(), rangeKeyCondition);
-			applySortIfSpecified(queryExpression, Arrays.asList(new String[]{getRangeKeyPropertyName()}));
+			applySortIfSpecified(
+					order -> queryExpression.setScanIndexForward(order.getDirection().equals(Sort.Direction.ASC)),
+					Arrays.asList(new String[]{getRangeKeyPropertyName()}));
 
 		} else if (isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey()
 				|| (isApplicableForGlobalSecondaryIndex())) {
@@ -178,12 +181,16 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 				}
 			}
 
-			applySortIfSpecified(queryExpression, allowedSortProperties);
+			applySortIfSpecified(
+					order -> queryExpression.setScanIndexForward(order.getDirection().equals(Sort.Direction.ASC)),
+					allowedSortProperties);
 			if (getGlobalSecondaryIndexName() != null) {
 				queryExpression.setIndexName(getGlobalSecondaryIndexName());
 			}
 		} else {
-			applySortIfSpecified(queryExpression, Arrays.asList(new String[]{getRangeKeyPropertyName()}));
+			applySortIfSpecified(
+					order -> queryExpression.setScanIndexForward(order.getDirection().equals(Sort.Direction.ASC)),
+					Arrays.asList(new String[]{getRangeKeyPropertyName()}));
 		}
 
 		if (projection.isPresent()) {
