@@ -15,8 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.cdi;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +46,7 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBRepositoryExtension.class);
 
-	private final Map<Set<Annotation>, Bean<AmazonDynamoDB>> amazonDynamoDBs = new HashMap<Set<Annotation>, Bean<AmazonDynamoDB>>();
-
 	private final Map<Set<Annotation>, Bean<DynamoDBOperations>> dynamoDBOperationss = new HashMap<Set<Annotation>, Bean<DynamoDBOperations>>();
-
-	private final Map<Set<Annotation>, Bean<DynamoDBMapperConfig>> dbMapperConfigs = new HashMap<Set<Annotation>, Bean<DynamoDBMapperConfig>>();
 
 	public DynamoDBRepositoryExtension() {
 		LOGGER.info("Activating CDI extension for Spring Data DynamoDB repositories.");
@@ -72,21 +66,13 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 	<X> void processBean(@Observes ProcessBean<X> processBean) {
 		Bean<X> bean = processBean.getBean();
 		for (Type type : bean.getTypes()) {
-			// Check if the bean is a AmazonDynamoDB
-			if (type instanceof Class<?> && AmazonDynamoDBClient.class.isAssignableFrom((Class<?>) type)) {
-				Set<Annotation> qualifiers = new HashSet<Annotation>(bean.getQualifiers());
-				if (bean.isAlternative() || !amazonDynamoDBs.containsKey(qualifiers)) {
-					LOGGER.debug("Discovered '{}' with qualifiers {}.", AmazonDynamoDB.class.getName(), qualifiers);
-					amazonDynamoDBs.put(qualifiers, (Bean<AmazonDynamoDB>) bean);
-				}
-			}
 			// Check if the bean is a DynamoDBMapperConfig
-			if (type instanceof Class<?> && DynamoDBMapperConfig.class.isAssignableFrom((Class<?>) type)) {
+			if (type instanceof Class<?> && DynamoDBOperations.class.isAssignableFrom((Class<?>) type)) {
 				Set<Annotation> qualifiers = new HashSet<Annotation>(bean.getQualifiers());
-				if (bean.isAlternative() || !dbMapperConfigs.containsKey(qualifiers)) {
+				if (bean.isAlternative() || !dynamoDBOperationss.containsKey(qualifiers)) {
 					LOGGER.debug("Discovered '{}' with qualifiers {}.", DynamoDBMapperConfig.class.getName(),
 							qualifiers);
-					dbMapperConfigs.put(qualifiers, (Bean<DynamoDBMapperConfig>) bean);
+					dynamoDBOperationss.put(qualifiers, (Bean<DynamoDBOperations>) bean);
 				}
 			}
 		}
@@ -130,24 +116,16 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 	private <T> Bean<T> createRepositoryBean(Class<T> repositoryType, Set<Annotation> qualifiers,
 			BeanManager beanManager) {
 
-		// Determine the amazondbclient bean which matches the qualifiers of the
+		// Determine the DynamoDBOperations bean which matches the qualifiers of the
 		// repository.
-		Bean<AmazonDynamoDB> amazonDynamoDBBean = amazonDynamoDBs.get(qualifiers);
-
-		// Determine the dynamo db mapper configbean which matches the
-		// qualifiers of the repository.
-		Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean = dbMapperConfigs.get(qualifiers);
-
-		if (amazonDynamoDBBean == null) {
+		Bean<DynamoDBOperations> dynamoDBOperationsBean = dynamoDBOperationss.get(qualifiers);
+		if (dynamoDBOperationsBean == null) {
 			throw new UnsatisfiedResolutionException(
 					String.format("Unable to resolve a bean for '%s' with qualifiers %s.",
-							AmazonDynamoDBClient.class.getName(), qualifiers));
+							DynamoDBOperations.class.getName(), qualifiers));
 		}
 
-		Bean<DynamoDBOperations> dynamoDBOperationsBean = dynamoDBOperationss.get(qualifiers);
-
 		// Construct and return the repository bean.
-		return new DynamoDBRepositoryBean<T>(beanManager, amazonDynamoDBBean, dynamoDBMapperConfigBean,
-				dynamoDBOperationsBean, qualifiers, repositoryType);
+		return new DynamoDBRepositoryBean<T>(beanManager, dynamoDBOperationsBean, qualifiers, repositoryType);
 	}
 }

@@ -15,12 +15,17 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBRepositoryFactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.data.config.ParsingUtils;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport;
+import org.springframework.data.repository.config.RepositoryConfigurationSource;
 import org.springframework.data.repository.config.XmlRepositoryConfigurationSource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -31,6 +36,9 @@ import org.w3c.dom.Element;
  * @author Sebastian Just
  */
 public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBRepositoryConfigExtension.class);
+
+	private static final String DYNAMO_DB_MODULE_PREFIX = "dynamoDB";
 
 	private static final String DEFAULT_AMAZON_DYNAMO_DB_BEAN_NAME = "amazonDynamoDB";
 
@@ -41,28 +49,36 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	private static final String AMAZON_DYNAMODB_REF = "amazon-dynamodb-ref";
 
 	@Override
+	protected String getModulePrefix() {
+		return DYNAMO_DB_MODULE_PREFIX;
+	}
+
+	@Override
 	public String getRepositoryFactoryBeanClassName() {
 		return DynamoDBRepositoryFactoryBean.class.getName();
 	}
 
 	@Override
+	public void registerBeansForRoot(BeanDefinitionRegistry registry,
+			RepositoryConfigurationSource configurationSource) {
+		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
+
+		String packageName = DynamoDBRepositoryConfigExtension.class.getPackage().getName();
+		int foundBeans = scanner.scan(packageName);
+
+		LOGGER.debug("Scanned {} Spring-Data DynamoDB beans from {}", foundBeans, packageName);
+	}
+	
+	@Override
 	public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
 		AnnotationAttributes attributes = config.getAttributes();
 
-		postProcess(builder, attributes.getString("amazonDynamoDBRef"), attributes.getString("dynamoDBMapperConfigRef"),
+		postProcess(builder,
+				attributes.getString("amazonDynamoDBRef"),
+				attributes.getString("dynamoDBMapperConfigRef"),
 				attributes.getString("dynamoDBOperationsRef"));
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.data.repository.config.
-	 * RepositoryConfigurationExtensionSupport
-	 * #postProcess(org.springframework.beans
-	 * .factory.support.BeanDefinitionBuilder, org.springframework.data.repository
-	 * .config.XmlRepositoryConfigurationSource)
-	 */
 	@Override
 	public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
 
@@ -98,9 +114,5 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	}
 
-	@Override
-	protected String getModulePrefix() {
-		return "dynamoDB";
-	}
 
 }

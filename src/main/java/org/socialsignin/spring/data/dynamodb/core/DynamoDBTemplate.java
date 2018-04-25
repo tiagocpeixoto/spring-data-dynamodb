@@ -66,6 +66,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	 * @param dynamoDBMapperConfig
 	 *            The config to use
 	 */
+	@Deprecated
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig) {
 		this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
@@ -78,6 +79,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	 * @param dynamoDBMapper
 	 *            The Mapper to use
 	 */
+	@Deprecated
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper) {
 		this(amazonDynamoDB, null, dynamoDBMapper);
 	}
@@ -89,6 +91,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	 * @param amazonDynamoDB
 	 *            The AWS SDK instance to talk to DynamoDB
 	 */
+	@Deprecated
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB) {
 		this(amazonDynamoDB, null, null);
 	}
@@ -112,43 +115,11 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		Assert.notNull(amazonDynamoDB, "amazonDynamoDB must not be null!");
 		this.amazonDynamoDB = amazonDynamoDB;
 
-		if (dynamoDBMapperConfig == null) {
-			this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
-		} else {
+		Assert.notNull(dynamoDBMapperConfig, "dynamoDBMapperConfig must not be null!");
+		this.dynamoDBMapperConfig = dynamoDBMapperConfig;
 
-			// #146, #81 #157
-			// Trying to fix half-initialized DynamoDBMapperConfigs here.
-			// The old documentation advised to start with an empty builder. Therefore we
-			// try here to set required fields to their defaults -
-			// As the documentation at
-			// https://github.com/derjust/spring-data-dynamodb/wiki/Alter-table-name-during-runtime
-			// (same as https://git.io/DynamoDBMapperConfig)
-			// now does: Start with #DEFAULT and add what's required
-			DynamoDBMapperConfig.Builder emptyBuilder = DynamoDBMapperConfig.builder(); // empty (!) builder
-
-			if (dynamoDBMapperConfig.getConversionSchema() == null) {
-				LOGGER.warn(
-						"No ConversionSchema set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
-				// DynamoDBMapperConfig#DEFAULT comes with a ConversionSchema
-				emptyBuilder.withConversionSchema(DynamoDBMapperConfig.DEFAULT.getConversionSchema());
-			}
-
-			if (dynamoDBMapperConfig.getTypeConverterFactory() == null) {
-				LOGGER.warn(
-						"No TypeConverterFactory set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
-				// DynamoDBMapperConfig#DEFAULT comes with a TypeConverterFactory
-				emptyBuilder.withTypeConverterFactory(DynamoDBMapperConfig.DEFAULT.getTypeConverterFactory());
-			}
-
-			// Deprecated but the only way how DynamoDBMapperConfig#merge is exposed
-			this.dynamoDBMapperConfig = new DynamoDBMapperConfig(dynamoDBMapperConfig, emptyBuilder.build());
-		}
-
-		if (dynamoDBMapper == null) {
-			this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
-		} else {
-			this.dynamoDBMapper = dynamoDBMapper;
-		}
+		Assert.notNull(dynamoDBMapper, "dynamoDBMapper must not be null!");
+		this.dynamoDBMapper = dynamoDBMapper;
 	}
 
 	@Override
