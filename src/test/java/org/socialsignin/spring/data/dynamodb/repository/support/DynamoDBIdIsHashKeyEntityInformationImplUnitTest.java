@@ -56,7 +56,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 	@Mock
 	private DynamoDBMarshaller mockPropertyMarshaller;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setup() {
 
@@ -78,7 +77,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 				mockPlaylistEntityMetadata);
 		dynamoDBUserEntityInformation = new DynamoDBIdIsHashKeyEntityInformationImpl<>(User.class,
 				mockUserEntityMetadata);
-
 	}
 
 	@Test

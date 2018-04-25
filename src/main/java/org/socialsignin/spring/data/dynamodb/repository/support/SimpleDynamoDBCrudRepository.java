@@ -101,10 +101,9 @@ public class SimpleDynamoDBCrudRepository<T, ID> implements DynamoDBCrudReposito
 			}
 		}).collect(Collectors.toList());
 
-		Map<Class<?>, List<KeyPair>> keyPairsMap = Collections.<Class<?>, List<KeyPair>>singletonMap(domainType,
+		Map<Class<T>, List<KeyPair>> keyPairsMap = Collections.<Class<T>, List<KeyPair>>singletonMap(domainType,
 				keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap)
-				.get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
+		return dynamoDBOperations.batchLoad(keyPairsMap);
 	}
 
 	@Override

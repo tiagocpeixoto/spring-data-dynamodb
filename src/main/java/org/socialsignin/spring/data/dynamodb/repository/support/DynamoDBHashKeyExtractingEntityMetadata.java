@@ -35,7 +35,7 @@ public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetada
 
 	Optional<String> getOverriddenAttributeName(String propertyName);
 
-	DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
+	<V extends DynamoDBMarshaller<?>> V getMarshallerForProperty(String propertyName);
 
 	DynamoDBTypeConverter<?, ?> getTypeConverterForProperty(String propertyName);
 

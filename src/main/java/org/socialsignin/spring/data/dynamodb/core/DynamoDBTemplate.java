@@ -48,6 +48,7 @@ import org.springframework.util.Assert;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBTemplate.class);
@@ -196,14 +197,12 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	}
 
 	@Override
-	public Map<String, List<Object>> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet) {
-		Map<String, List<Object>> results = dynamoDBMapper.batchLoad(itemsToGet);
-		for (List<Object> resultList : results.values()) {
-			for (Object entity : resultList) {
-				maybeEmitEvent(entity, AfterLoadEvent::new);
-			}
-		}
-		return results;
+	public <T> List<T> batchLoad(Map<Class<T>, List<KeyPair>> itemsToGet) {
+		return dynamoDBMapper.batchLoad((Iterable<? extends Object>) itemsToGet).values().stream()
+				.flatMap(v -> v.stream()).map(e -> (T) e).map(entity -> {
+					maybeEmitEvent(entity, AfterLoadEvent::new);
+					return entity;
+				}).collect(Collectors.toList());
 	}
 
 	@Override
