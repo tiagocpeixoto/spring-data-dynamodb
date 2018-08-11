@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleDynamoDBPagingAndSortingRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Data DynamoDB</a> &gt; <a href="index.source.html" class="el_package">org.socialsignin.spring.data.dynamodb.repository.support</a> &gt; <span class="el_source">SimpleDynamoDBPagingAndSortingRepository.java</span></div><h1>SimpleDynamoDBPagingAndSortingRepository.java</h1><pre class="source lang-java linenums">/**
- * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
@@ -54,12 +54,12 @@ import java.util.List;
  *            the type of the entity's identifier
  */
 public class SimpleDynamoDBPagingAndSortingRepository&lt;T, ID&gt; extends SimpleDynamoDBCrudRepository&lt;T, ID&gt;
-		implements DynamoDBPagingAndSortingRepository&lt;T, ID&gt; {
+		implements
+			DynamoDBPagingAndSortingRepository&lt;T, ID&gt; {
 
 	public SimpleDynamoDBPagingAndSortingRepository(DynamoDBEntityInformation&lt;T, ID&gt; entityInformation,
 			DynamoDBOperations dynamoDBOperations, EnableScanPermissions enableScanPermissions) {
-<span class="fc" id="L61">		super(entityInformation, dynamoDBOperations, enableScanPermissions);</span>
-		
+<span class="fc" id="L62">		super(entityInformation, dynamoDBOperations, enableScanPermissions);</span>
 
 <span class="fc" id="L64">	}</span>
 
@@ -76,7 +76,7 @@ public class SimpleDynamoDBPagingAndSortingRepository&lt;T, ID&gt; extends Simpl
 <span class="nc" id="L76">		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();</span>
 		// Scan to the end of the page after the requested page
 <span class="nc" id="L78">		long scanTo = pageable.getOffset() + (2 * pageable.getPageSize());</span>
-<span class="nc" id="L79">		scanExpression.setLimit((int)Math.min(scanTo, Integer.MAX_VALUE));</span>
+<span class="nc" id="L79">		scanExpression.setLimit((int) Math.min(scanTo, Integer.MAX_VALUE));</span>
 <span class="nc" id="L80">		PaginatedScanList&lt;T&gt; paginatedScanList = dynamoDBOperations.scan(domainType, scanExpression);</span>
 <span class="nc" id="L81">		Iterator&lt;T&gt; iterator = paginatedScanList.iterator();</span>
 <span class="nc bnc" id="L82" title="All 2 branches missed.">		if (pageable.getOffset() &gt; 0) {</span>
@@ -86,41 +86,42 @@ public class SimpleDynamoDBPagingAndSortingRepository&lt;T, ID&gt; extends Simpl
 		}
 		// Scan ahead to retrieve the next page count
 <span class="nc" id="L88">		List&lt;T&gt; results = readPageOfResults(iterator, pageable.getPageSize());</span>
-		
-<span class="nc" id="L90">		assertScanEnabled(enableScanPermissions.isFindAllPaginatedScanEnabled(), &quot;findAll(Pageable pageable)&quot;);</span>
-<span class="nc" id="L91">		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(), &quot;findAll(Pageable pageable)&quot;);</span>
 
-<span class="nc" id="L93">		int totalCount = dynamoDBOperations.count(domainType, scanExpression);</span>
-		
-<span class="nc" id="L95">		return new PageImpl&lt;&gt;(results, pageable, totalCount);</span>
+<span class="nc" id="L90">		assertScanEnabled(enableScanPermissions.isFindAllPaginatedScanEnabled(), &quot;findAll(Pageable pageable)&quot;);</span>
+<span class="nc" id="L91">		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(),</span>
+				&quot;findAll(Pageable pageable)&quot;);
+
+<span class="nc" id="L94">		int totalCount = dynamoDBOperations.count(domainType, scanExpression);</span>
+
+<span class="nc" id="L96">		return new PageImpl&lt;&gt;(results, pageable, totalCount);</span>
 
 	}
 
 	private long scanThroughResults(Iterator&lt;T&gt; paginatedScanListIterator, long resultsToScan) {
-<span class="nc" id="L100">		long processed = 0;</span>
-<span class="nc bnc" id="L101" title="All 4 branches missed.">		while (paginatedScanListIterator.hasNext() &amp;&amp; processed &lt; resultsToScan) {</span>
-<span class="nc" id="L102">			paginatedScanListIterator.next();</span>
-<span class="nc" id="L103">			processed++;</span>
+<span class="nc" id="L101">		long processed = 0;</span>
+<span class="nc bnc" id="L102" title="All 4 branches missed.">		while (paginatedScanListIterator.hasNext() &amp;&amp; processed &lt; resultsToScan) {</span>
+<span class="nc" id="L103">			paginatedScanListIterator.next();</span>
+<span class="nc" id="L104">			processed++;</span>
 		}
-<span class="nc" id="L105">		return processed;</span>
+<span class="nc" id="L106">		return processed;</span>
 	}
 
 	private List&lt;T&gt; readPageOfResults(Iterator&lt;T&gt; paginatedScanListIterator, int pageSize) {
-<span class="nc" id="L109">		int processed = 0;</span>
-<span class="nc" id="L110">		List&lt;T&gt; resultsPage = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L111" title="All 4 branches missed.">		while (paginatedScanListIterator.hasNext() &amp;&amp; processed &lt; pageSize) {</span>
-<span class="nc" id="L112">			resultsPage.add(paginatedScanListIterator.next());</span>
-<span class="nc" id="L113">			processed++;</span>
+<span class="nc" id="L110">		int processed = 0;</span>
+<span class="nc" id="L111">		List&lt;T&gt; resultsPage = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L112" title="All 4 branches missed.">		while (paginatedScanListIterator.hasNext() &amp;&amp; processed &lt; pageSize) {</span>
+<span class="nc" id="L113">			resultsPage.add(paginatedScanListIterator.next());</span>
+<span class="nc" id="L114">			processed++;</span>
 		}
-<span class="nc" id="L115">		return resultsPage;</span>
+<span class="nc" id="L116">		return resultsPage;</span>
 	}
-	
+
 	public void assertScanCountEnabled(boolean countScanEnabled, String methodName) {
-<span class="nc" id="L119">		Assert.isTrue(countScanEnabled, &quot;Scanning for the total counts for unpaginated &quot; + methodName + &quot; queries is not enabled.  &quot;</span>
-				+ &quot;To enable, re-implement the &quot; + methodName
+<span class="nc" id="L120">		Assert.isTrue(countScanEnabled, &quot;Scanning for the total counts for unpaginated &quot; + methodName</span>
+				+ &quot; queries is not enabled.  &quot; + &quot;To enable, re-implement the &quot; + methodName
 				+ &quot;() method in your repository interface and annotate with @EnableScanCount, or &quot;
 				+ &quot;enable total count scanning for all repository methods by annotating your repository interface with @EnableScanCount&quot;);
-<span class="nc" id="L123">	}</span>
+<span class="nc" id="L124">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

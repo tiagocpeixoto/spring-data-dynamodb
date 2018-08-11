@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamoDBHashAndRangeKeyMethodExtractorImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Data DynamoDB</a> &gt; <a href="index.source.html" class="el_package">org.socialsignin.spring.data.dynamodb.repository.support</a> &gt; <span class="el_source">DynamoDBHashAndRangeKeyMethodExtractorImpl.java</span></div><h1>DynamoDBHashAndRangeKeyMethodExtractorImpl.java</h1><pre class="source lang-java linenums">/**
- * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
@@ -39,99 +39,104 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl&lt;T&gt; implements Dyna
 	private Field rangeKeyField;
 
 	/**
-	 * Creates a new {@link DynamoDBHashAndRangeKeyMethodExtractor} for the given domain type.
+	 * Creates a new {@link DynamoDBHashAndRangeKeyMethodExtractor} for the given
+	 * domain type.
 	 *
 	 * @param idType
 	 *            must not be {@literal null}.
 	 */
-<span class="fc" id="L47">	public DynamoDBHashAndRangeKeyMethodExtractorImpl(final Class&lt;T&gt; idType) {</span>
+<span class="fc" id="L48">	public DynamoDBHashAndRangeKeyMethodExtractorImpl(final Class&lt;T&gt; idType) {</span>
 
-<span class="fc" id="L49">		Assert.notNull(idType, &quot;Id type must not be null!&quot;);</span>
-<span class="fc" id="L50">		this.idType = idType;</span>
-<span class="fc" id="L51">		ReflectionUtils.doWithMethods(idType, new MethodCallback() {</span>
+<span class="fc" id="L50">		Assert.notNull(idType, &quot;Id type must not be null!&quot;);</span>
+<span class="fc" id="L51">		this.idType = idType;</span>
+<span class="fc" id="L52">		ReflectionUtils.doWithMethods(idType, new MethodCallback() {</span>
 			@Override
-            public void doWith(Method method) {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">				if (method.getAnnotation(DynamoDBHashKey.class) != null) {</span>
-<span class="fc" id="L55">					Assert.isNull(hashKeyMethod, &quot;Multiple methods annotated by @DynamoDBHashKey within type &quot; + idType.getName()</span>
-							+ &quot;!&quot;);
-<span class="fc" id="L57">					ReflectionUtils.makeAccessible(method);</span>
-<span class="fc" id="L58">					hashKeyMethod = method;</span>
+			public void doWith(Method method) {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">				if (method.getAnnotation(DynamoDBHashKey.class) != null) {</span>
+<span class="fc" id="L56">					Assert.isNull(hashKeyMethod,</span>
+<span class="fc" id="L57">							&quot;Multiple methods annotated by @DynamoDBHashKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+<span class="fc" id="L58">					ReflectionUtils.makeAccessible(method);</span>
+<span class="fc" id="L59">					hashKeyMethod = method;</span>
 				}
-<span class="fc" id="L60">			}</span>
+<span class="fc" id="L61">			}</span>
 		});
-<span class="fc" id="L62">		ReflectionUtils.doWithFields(idType, new FieldCallback() {</span>
+<span class="fc" id="L63">		ReflectionUtils.doWithFields(idType, new FieldCallback() {</span>
 			@Override
-            public void doWith(Field field) {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">				if (field.getAnnotation(DynamoDBHashKey.class) != null) {</span>
-<span class="nc" id="L66">					Assert.isNull(hashKeyField, &quot;Multiple fields annotated by @DynamoDBHashKey within type &quot; + idType.getName()</span>
-							+ &quot;!&quot;);
-<span class="nc" id="L68">					ReflectionUtils.makeAccessible(field);</span>
+			public void doWith(Field field) {
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">				if (field.getAnnotation(DynamoDBHashKey.class) != null) {</span>
+<span class="nc" id="L67">					Assert.isNull(hashKeyField,</span>
+<span class="nc" id="L68">							&quot;Multiple fields annotated by @DynamoDBHashKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+<span class="nc" id="L69">					ReflectionUtils.makeAccessible(field);</span>
 
-<span class="nc" id="L70">					hashKeyField = field;</span>
+<span class="nc" id="L71">					hashKeyField = field;</span>
 				}
-<span class="fc" id="L72">			}</span>
+<span class="fc" id="L73">			}</span>
 		});
-<span class="fc" id="L74">		ReflectionUtils.doWithMethods(idType, new MethodCallback() {</span>
+<span class="fc" id="L75">		ReflectionUtils.doWithMethods(idType, new MethodCallback() {</span>
 			@Override
-            public void doWith(Method method) {
-<span class="fc bfc" id="L77" title="All 2 branches covered.">				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {</span>
-<span class="fc" id="L78">					Assert.isNull(rangeKeyMethod,</span>
-<span class="fc" id="L79">							&quot;Multiple methods annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
-<span class="fc" id="L80">					ReflectionUtils.makeAccessible(method);</span>
-<span class="fc" id="L81">					rangeKeyMethod = method;</span>
+			public void doWith(Method method) {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {</span>
+<span class="fc" id="L79">					Assert.isNull(rangeKeyMethod,</span>
+<span class="fc" id="L80">							&quot;Multiple methods annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+<span class="fc" id="L81">					ReflectionUtils.makeAccessible(method);</span>
+<span class="fc" id="L82">					rangeKeyMethod = method;</span>
 				}
-<span class="fc" id="L83">			}</span>
+<span class="fc" id="L84">			}</span>
 		});
-<span class="fc" id="L85">		ReflectionUtils.doWithFields(idType, new FieldCallback() {</span>
+<span class="fc" id="L86">		ReflectionUtils.doWithFields(idType, new FieldCallback() {</span>
 			@Override
-            public void doWith(Field field) {
-<span class="fc bfc" id="L88" title="All 2 branches covered.">				if (field.getAnnotation(DynamoDBRangeKey.class) != null) {</span>
-<span class="fc" id="L89">					Assert.isNull(rangeKeyField,</span>
-<span class="fc" id="L90">							&quot;Multiple fields annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
-<span class="fc" id="L91">					ReflectionUtils.makeAccessible(field);</span>
-<span class="fc" id="L92">					rangeKeyField = field;</span>
+			public void doWith(Field field) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (field.getAnnotation(DynamoDBRangeKey.class) != null) {</span>
+<span class="fc" id="L90">					Assert.isNull(rangeKeyField,</span>
+<span class="fc" id="L91">							&quot;Multiple fields annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+<span class="fc" id="L92">					ReflectionUtils.makeAccessible(field);</span>
+<span class="fc" id="L93">					rangeKeyField = field;</span>
 				}
-<span class="fc" id="L94">			}</span>
+<span class="fc" id="L95">			}</span>
 		});
-<span class="pc bpc" id="L96" title="1 of 4 branches missed.">		if (hashKeyMethod == null &amp;&amp; hashKeyField == null) {</span>
-<span class="fc" id="L97">            throw new IllegalArgumentException(&quot;No method or field annotated by @DynamoDBHashKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
-        }
-<span class="fc bfc" id="L99" title="All 4 branches covered.">        if (rangeKeyMethod == null &amp;&amp; rangeKeyField == null) {</span>
-<span class="fc" id="L100">            throw new IllegalArgumentException(&quot;No method or field annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
-        }
-<span class="pc bpc" id="L102" title="2 of 4 branches missed.">        if (hashKeyMethod != null &amp;&amp; hashKeyField != null) {</span>
-<span class="nc" id="L103">            throw new IllegalArgumentException(&quot;Both method and field annotated by @DynamoDBHashKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
-        }
-<span class="pc bpc" id="L105" title="1 of 4 branches missed.">        if(rangeKeyMethod != null &amp;&amp; rangeKeyField != null) {</span>
-<span class="nc" id="L106">            throw new IllegalArgumentException(&quot;Both method and field annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
-        }
-<span class="fc" id="L108">	}</span>
+<span class="pc bpc" id="L97" title="1 of 4 branches missed.">		if (hashKeyMethod == null &amp;&amp; hashKeyField == null) {</span>
+<span class="fc" id="L98">			throw new IllegalArgumentException(</span>
+<span class="fc" id="L99">					&quot;No method or field annotated by @DynamoDBHashKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+		}
+<span class="fc bfc" id="L101" title="All 4 branches covered.">		if (rangeKeyMethod == null &amp;&amp; rangeKeyField == null) {</span>
+<span class="fc" id="L102">			throw new IllegalArgumentException(</span>
+<span class="fc" id="L103">					&quot;No method or field annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+		}
+<span class="pc bpc" id="L105" title="2 of 4 branches missed.">		if (hashKeyMethod != null &amp;&amp; hashKeyField != null) {</span>
+<span class="nc" id="L106">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L107">					&quot;Both method and field annotated by @DynamoDBHashKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+		}
+<span class="pc bpc" id="L109" title="1 of 4 branches missed.">		if (rangeKeyMethod != null &amp;&amp; rangeKeyField != null) {</span>
+<span class="nc" id="L110">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L111">					&quot;Both method and field annotated by @DynamoDBRangeKey within type &quot; + idType.getName() + &quot;!&quot;);</span>
+		}
+<span class="fc" id="L113">	}</span>
 
 	@Override
 	public Class&lt;T&gt; getJavaType() {
-<span class="fc" id="L112">		return idType;</span>
+<span class="fc" id="L117">		return idType;</span>
 	}
 
 	@Override
 	public Method getHashKeyMethod() {
 
-<span class="fc" id="L118">		return hashKeyMethod;</span>
+<span class="fc" id="L123">		return hashKeyMethod;</span>
 	}
 
 	@Override
 	public Method getRangeKeyMethod() {
-<span class="fc" id="L123">		return rangeKeyMethod;</span>
+<span class="fc" id="L128">		return rangeKeyMethod;</span>
 	}
 
 	@Override
 	public Field getHashKeyField() {
 
-<span class="nc" id="L129">		return hashKeyField;</span>
+<span class="nc" id="L134">		return hashKeyField;</span>
 	}
 
 	@Override
 	public Field getRangeKeyField() {
-<span class="nc" id="L134">		return rangeKeyField;</span>
+<span class="nc" id="L139">		return rangeKeyField;</span>
 	}
 
 }

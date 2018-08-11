@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnableScanAnnotationPermissions.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Data DynamoDB</a> &gt; <a href="index.source.html" class="el_package">org.socialsignin.spring.data.dynamodb.repository.support</a> &gt; <span class="el_source">EnableScanAnnotationPermissions.java</span></div><h1>EnableScanAnnotationPermissions.java</h1><pre class="source lang-java linenums">/**
- * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
@@ -74,63 +74,65 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 			}
 <span class="fc bfc" id="L75" title="All 2 branches covered.">			for (Method method : methods) {</span>
 
-<span class="pc bpc" id="L77" title="3 of 4 branches missed.">				if (!method.isAnnotationPresent(EnableScanCount.class) || method.getParameterTypes().length != 1) {</span>
+<span class="pc bpc" id="L77" title="1 of 4 branches missed.">				if (!method.isAnnotationPresent(EnableScanCount.class) || method.getParameterTypes().length != 1) {</span>
 					// Only consider methods which have the EnableScanCount
 					// annotation and which have a single pageable parameter
-<span class="nc" id="L80">					continue;</span>
+<span class="fc" id="L80">					continue;</span>
 				}
 
-<span class="nc bnc" id="L83" title="All 4 branches missed.">				if (method.getName().equals(&quot;findAll&quot;) &amp;&amp; Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {</span>
-<span class="nc" id="L84">					findAllUnpaginatedScanCountEnabled = true;</span>
-<span class="nc" id="L85">					continue;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">				if (method.getName().equals(&quot;findAll&quot;)</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">						&amp;&amp; Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {</span>
+<span class="nc" id="L85">					findAllUnpaginatedScanCountEnabled = true;</span>
+<span class="nc" id="L86">					continue;</span>
 				}
 
 			}
-<span class="fc bfc" id="L89" title="All 2 branches covered.">			for (Method method : methods) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (Method method : methods) {</span>
 
-<span class="fc bfc" id="L91" title="All 4 branches covered.">				if (!method.isAnnotationPresent(EnableScan.class) || method.getParameterTypes().length != 1) {</span>
+<span class="fc bfc" id="L92" title="All 4 branches covered.">				if (!method.isAnnotationPresent(EnableScan.class) || method.getParameterTypes().length != 1) {</span>
 					// Only consider methods which have the EnableScan
 					// annotation and which have a single pageable parameter
-<span class="fc" id="L94">					continue;</span>
+<span class="fc" id="L95">					continue;</span>
 				}
 
-<span class="pc bpc" id="L97" title="1 of 4 branches missed.">				if (method.getName().equals(&quot;findAll&quot;) &amp;&amp; Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {</span>
-<span class="fc" id="L98">					findAllPaginatedScanEnabled = true;</span>
-<span class="fc" id="L99">					continue;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				if (method.getName().equals(&quot;findAll&quot;)</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">						&amp;&amp; Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {</span>
+<span class="fc" id="L100">					findAllPaginatedScanEnabled = true;</span>
+<span class="fc" id="L101">					continue;</span>
 				}
 
 			}
 		}
-<span class="pc bpc" id="L104" title="1 of 4 branches missed.">		if (!findAllUnpaginatedScanCountEnabled &amp;&amp; repositoryInterface.isAnnotationPresent(EnableScanCount.class)) {</span>
-<span class="fc" id="L105">			findAllUnpaginatedScanCountEnabled = true;</span>
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">		if (!findAllUnpaginatedScanCountEnabled &amp;&amp; repositoryInterface.isAnnotationPresent(EnableScanCount.class)) {</span>
+<span class="fc" id="L107">			findAllUnpaginatedScanCountEnabled = true;</span>
 		}
 
-<span class="fc" id="L108">	}</span>
+<span class="fc" id="L110">	}</span>
 
 	@Override
 	public boolean isFindAllUnpaginatedScanEnabled() {
-<span class="fc" id="L112">		return findAllUnpaginatedScanEnabled;</span>
+<span class="fc" id="L114">		return findAllUnpaginatedScanEnabled;</span>
 
 	}
 
 	@Override
 	public boolean isDeleteAllUnpaginatedScanEnabled() {
-<span class="fc" id="L118">		return deleteAllUnpaginatedScanEnabled;</span>
+<span class="fc" id="L120">		return deleteAllUnpaginatedScanEnabled;</span>
 	}
 
 	@Override
 	public boolean isCountUnpaginatedScanEnabled() {
-<span class="fc" id="L123">		return countUnpaginatedScanEnabled;</span>
+<span class="fc" id="L125">		return countUnpaginatedScanEnabled;</span>
 	}
 
 	@Override
 	public boolean isFindAllUnpaginatedScanCountEnabled() {
-<span class="fc" id="L128">		return findAllUnpaginatedScanCountEnabled;</span>
+<span class="fc" id="L130">		return findAllUnpaginatedScanCountEnabled;</span>
 	}
 
 	@Override
 	public boolean isFindAllPaginatedScanEnabled() {
-<span class="fc" id="L133">		return findAllPaginatedScanEnabled;</span>
+<span class="fc" id="L135">		return findAllPaginatedScanEnabled;</span>
 	}
 
 }

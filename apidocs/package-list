@@ -1,5 +1,6 @@
 org.socialsignin.spring.data.dynamodb.config
 org.socialsignin.spring.data.dynamodb.core
+org.socialsignin.spring.data.dynamodb.domain
 org.socialsignin.spring.data.dynamodb.exception
 org.socialsignin.spring.data.dynamodb.mapping
 org.socialsignin.spring.data.dynamodb.mapping.event

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PartTreeDynamoDBQuery.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Data DynamoDB</a> &gt; <a href="index.source.html" class="el_package">org.socialsignin.spring.data.dynamodb.repository.query</a> &gt; <span class="el_source">PartTreeDynamoDBQuery.java</span></div><h1>PartTreeDynamoDBQuery.java</h1><pre class="source lang-java linenums">/**
- * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
@@ -28,58 +28,58 @@ import org.springframework.data.repository.query.parser.PartTree;
  */
 public class PartTreeDynamoDBQuery&lt;T, ID&gt; extends AbstractDynamoDBQuery&lt;T, ID&gt; implements RepositoryQuery {
 
-	private DynamoDBQueryMethod&lt;T, ID&gt; queryMethod;
 	private final Parameters&lt;?, ?&gt; parameters;
-
-
 	private final PartTree tree;
 
 	public PartTreeDynamoDBQuery(DynamoDBOperations dynamoDBOperations, DynamoDBQueryMethod&lt;T, ID&gt; method) {
-<span class="fc" id="L38">		super(dynamoDBOperations, method);</span>
-<span class="fc" id="L39">		this.queryMethod = method;</span>
-<span class="fc" id="L40">		this.parameters = method.getParameters();</span>
-<span class="fc" id="L41">		this.tree = new PartTree(method.getName(), method.getEntityType());</span>
-<span class="fc" id="L42">	}</span>
+<span class="fc" id="L35">		super(dynamoDBOperations, method);</span>
+<span class="fc" id="L36">		this.parameters = method.getParameters();</span>
+<span class="fc" id="L37">		this.tree = new PartTree(method.getName(), method.getEntityType());</span>
+<span class="fc" id="L38">	}</span>
 
 	protected DynamoDBQueryCreator&lt;T, ID&gt; createQueryCreator(ParametersParameterAccessor accessor) {
-<span class="fc" id="L45">		return new DynamoDBQueryCreator&lt;&gt;(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations);</span>
+<span class="fc" id="L41">		return new DynamoDBQueryCreator&lt;&gt;(tree, accessor, getQueryMethod().getEntityInformation(),</span>
+<span class="fc" id="L42">				getQueryMethod().getProjectionExpression(), dynamoDBOperations);</span>
 	}
-	
-	protected DynamoDBCountQueryCreator&lt;T, ID&gt; createCountQueryCreator(ParametersParameterAccessor accessor,boolean pageQuery) {
-<span class="fc" id="L49">		return new DynamoDBCountQueryCreator&lt;&gt;(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations,</span>
-				pageQuery);
+
+	protected DynamoDBCountQueryCreator&lt;T, ID&gt; createCountQueryCreator(ParametersParameterAccessor accessor,
+			boolean pageQuery) {
+<span class="fc" id="L47">		return new DynamoDBCountQueryCreator&lt;&gt;(tree, accessor, getQueryMethod().getEntityInformation(),</span>
+				dynamoDBOperations, pageQuery);
 	}
 
 	@Override
 	public Query&lt;T&gt; doCreateQuery(Object[] values) {
 
-<span class="fc" id="L56">		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);</span>
-<span class="fc" id="L57">		DynamoDBQueryCreator&lt;T, ID&gt; queryCreator = createQueryCreator(accessor);</span>
-<span class="fc" id="L58">		return queryCreator.createQuery();</span>
+<span class="fc" id="L54">		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);</span>
+<span class="fc" id="L55">		DynamoDBQueryCreator&lt;T, ID&gt; queryCreator = createQueryCreator(accessor);</span>
+<span class="fc" id="L56">		return queryCreator.createQuery();</span>
 
 	}
-	
+
 	@Override
-	public Query&lt;Long&gt; doCreateCountQuery(Object[] values,boolean pageQuery) {
+	public Query&lt;Long&gt; doCreateCountQuery(Object[] values, boolean pageQuery) {
 
-<span class="fc" id="L65">		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);</span>
-<span class="fc" id="L66">		DynamoDBCountQueryCreator&lt;T, ID&gt; queryCreator = createCountQueryCreator(accessor,pageQuery);</span>
-<span class="fc" id="L67">		return queryCreator.createQuery();</span>
+<span class="fc" id="L63">		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);</span>
+<span class="fc" id="L64">		DynamoDBCountQueryCreator&lt;T, ID&gt; queryCreator = createCountQueryCreator(accessor, pageQuery);</span>
+<span class="fc" id="L65">		return queryCreator.createQuery();</span>
 
 	}
 
-    @Override
-    protected boolean isCountQuery() {
-<span class="fc" id="L73">        return tree.isCountProjection();</span>
-    }
+	@Override
+	protected boolean isCountQuery() {
+<span class="fc" id="L71">		return tree.isCountProjection();</span>
+	}
 
-    @Override
-    protected boolean isExistsQuery() {
-<span class="fc" id="L78">        return tree.isExistsProjection();</span>
-    }
+	@Override
+	protected boolean isExistsQuery() {
+<span class="fc" id="L76">		return tree.isExistsProjection();</span>
+	}
 
-    @Override
-<span class="fc" id="L82">    protected boolean isDeleteQuery() { return tree.isDelete(); }</span>
+	@Override
+	protected boolean isDeleteQuery() {
+<span class="fc" id="L81">		return tree.isDelete();</span>
+	}
 
 	@Override
 	protected Integer getResultsRestrictionIfApplicable() {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamoDBPersistentPropertyImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Data DynamoDB</a> &gt; <a href="index.source.html" class="el_package">org.socialsignin.spring.data.dynamodb.mapping</a> &gt; <span class="el_source">DynamoDBPersistentPropertyImpl.java</span></div><h1>DynamoDBPersistentPropertyImpl.java</h1><pre class="source lang-java linenums">/**
- * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
@@ -38,24 +38,25 @@ import java.util.Set;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty&lt;DynamoDBPersistentProperty&gt; implements
-		DynamoDBPersistentProperty {
+class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty&lt;DynamoDBPersistentProperty&gt;
+		implements
+			DynamoDBPersistentProperty {
 
 	private static final Collection&lt;Class&lt;? extends Annotation&gt;&gt; ASSOCIATION_ANNOTATIONS;
 	private static final Collection&lt;Class&lt;? extends Annotation&gt;&gt; ID_ANNOTATIONS;
 
 	static {
 
-<span class="fc" id="L49">		Set&lt;Class&lt;? extends Annotation&gt;&gt; annotations = new HashSet&lt;Class&lt;? extends Annotation&gt;&gt;();</span>
+<span class="fc" id="L50">		Set&lt;Class&lt;? extends Annotation&gt;&gt; annotations = new HashSet&lt;Class&lt;? extends Annotation&gt;&gt;();</span>
 
-<span class="fc" id="L51">		annotations.add(Reference.class); // Reference not yet supported</span>
-<span class="fc" id="L52">		ASSOCIATION_ANNOTATIONS = Collections.unmodifiableSet(annotations);</span>
+<span class="fc" id="L52">		annotations.add(Reference.class); // Reference not yet supported</span>
+<span class="fc" id="L53">		ASSOCIATION_ANNOTATIONS = Collections.unmodifiableSet(annotations);</span>
 
-<span class="fc" id="L54">		annotations = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L55">		annotations.add(Id.class);</span>
-<span class="fc" id="L56">		annotations.add(DynamoDBHashKey.class);</span>
-<span class="fc" id="L57">		ID_ANNOTATIONS = annotations;</span>
-<span class="fc" id="L58">	}</span>
+<span class="fc" id="L55">		annotations = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L56">		annotations.add(Id.class);</span>
+<span class="fc" id="L57">		annotations.add(DynamoDBHashKey.class);</span>
+<span class="fc" id="L58">		ID_ANNOTATIONS = annotations;</span>
+<span class="fc" id="L59">	}</span>
 
 	/**
 	 * Creates a new {@link DynamoDBPersistentPropertyImpl}
@@ -68,29 +69,28 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty&l
 	 *            must not be {@literal null}.
 	 */
 
-	public DynamoDBPersistentPropertyImpl(Property property, DynamoDBPersistentEntityImpl&lt;?&gt; owner, SimpleTypeHolder simpleTypeHolder) {
-<span class="fc" id="L72">		super(property, owner, simpleTypeHolder);</span>
-<span class="fc" id="L73">	}</span>
+	public DynamoDBPersistentPropertyImpl(Property property, DynamoDBPersistentEntityImpl&lt;?&gt; owner,
+			SimpleTypeHolder simpleTypeHolder) {
+<span class="fc" id="L74">		super(property, owner, simpleTypeHolder);</span>
+<span class="fc" id="L75">	}</span>
 
 	@Override
 	public boolean isWritable() {
-<span class="nc bnc" id="L77" title="All 2 branches missed.">		return !isAnnotationPresent(DynamoDBIgnore.class);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">		return !isAnnotationPresent(DynamoDBIgnore.class);</span>
 	}
 
-
 	public boolean isHashKeyProperty() {
-<span class="fc" id="L82">		return isAnnotationPresent(DynamoDBHashKey.class);</span>
+<span class="fc" id="L83">		return isAnnotationPresent(DynamoDBHashKey.class);</span>
 	}
 
 	public boolean isCompositeIdProperty() {
-<span class="fc" id="L86">		return isAnnotationPresent(Id.class);</span>
+<span class="fc" id="L87">		return isAnnotationPresent(Id.class);</span>
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isIdProperty()
 	 */
 	@Override
@@ -109,14 +109,13 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty&l
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.springframework.data.mapping.model.AbstractPersistentProperty#isEntity
-	 * ()
+	 * org.springframework.data.mapping.model.AbstractPersistentProperty#isEntity ()
 	 */
 	// @Override
 
 	public boolean isEntity() {
 
-<span class="fc" id="L119">		return isAnnotationPresent(Reference.class);// Reference not Yet</span>
+<span class="fc" id="L118">		return isAnnotationPresent(Reference.class);// Reference not Yet</span>
 		// Supported
 		// return propertyDescriptor != null
 		// &amp;&amp; propertyDescriptor.getPropertyType().isAnnotationPresent(
@@ -129,40 +128,38 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty&l
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isAssociation()
 	 */
 	@Override
 	public boolean isAssociation() {
 
-<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (Class&lt;? extends Annotation&gt; annotationType : ASSOCIATION_ANNOTATIONS) {</span>
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">			if (findAnnotation(annotationType) != null) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		for (Class&lt;? extends Annotation&gt; annotationType : ASSOCIATION_ANNOTATIONS) {</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			if (findAnnotation(annotationType) != null) {</span>
 				// No query lookup yet supported ( see
 				// Repositories.getPersistentEntity(..) )
 				// return !information.isCollectionLike();
-<span class="nc" id="L144">				return true;</span>
+<span class="nc" id="L142">				return true;</span>
 			}
-<span class="fc" id="L146">		}</span>
+<span class="fc" id="L144">		}</span>
 
-<span class="fc" id="L148">		return false;</span>
+<span class="fc" id="L146">		return false;</span>
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isTransient()
 	 */
 	@Override
 	public boolean isTransient() {
-<span class="pc bpc" id="L160" title="2 of 6 branches missed.">		return isAnnotationPresent(Transient.class) || super.isTransient() || isAnnotationPresent(DynamoDBIgnore.class);</span>
+<span class="pc bpc" id="L157" title="2 of 6 branches missed.">		return isAnnotationPresent(Transient.class) || super.isTransient() || isAnnotationPresent(DynamoDBIgnore.class);</span>
 	}
 
 	@Override
 	public boolean isVersionProperty() {
-<span class="pc bpc" id="L165" title="2 of 4 branches missed.">		return super.isVersionProperty() || isAnnotationPresent(DynamoDBVersionAttribute.class);</span>
+<span class="pc bpc" id="L162" title="2 of 4 branches missed.">		return super.isVersionProperty() || isAnnotationPresent(DynamoDBVersionAttribute.class);</span>
 	}
 
 	/*
@@ -173,7 +170,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty&l
 	 */
 	@Override
 	protected Association&lt;DynamoDBPersistentProperty&gt; createAssociation() {
-<span class="nc" id="L176">		return new Association&lt;DynamoDBPersistentProperty&gt;(this, null);</span>
+<span class="nc" id="L173">		return new Association&lt;DynamoDBPersistentProperty&gt;(this, null);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
