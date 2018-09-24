@@ -181,7 +181,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 				sortAlreadySet = true;
 			} else {
 				throw new UnsupportedOperationException(
-						"Sorting only possible by " + permittedPropertyNames + " for the criteria specified");
+						"Sorting only possible by " + permittedPropertyNames + " for the criteria specified and not for " + order.getProperty());
 			}
 		}
 	}
