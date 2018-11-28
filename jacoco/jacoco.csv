@@ -32,19 +32,19 @@ Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.query,SingleEntityLoa
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.query,CountByHashAndRangeKeyQuery,0,29,0,2,0,6,0,3,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.query,AbstractDynamicQuery,0,9,0,0,0,4,0,1,0,1
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.query,QueryExpressionCountQuery,0,21,0,0,0,5,0,2,0,2
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.config,DynamoDBAuditingRegistrar,93,13,2,0,30,4,6,3,5,3
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.config,DynamoDBAuditingRegistrar,15,91,1,1,4,30,1,8,0,8
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.config,BeanNames,3,0,0,0,1,0,1,0,1,0
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.config,AbstractDynamoDBConfiguration,112,0,10,0,24,0,10,0,5,0
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.config,DynamoDBAuditingBeanDefinitionParser,0,50,0,4,0,14,0,6,0,4
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.config,DynamoDBRepositoriesRegistrar,0,9,0,0,0,3,0,3,0,3
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.config,DynamoDBRepositoryConfigExtension,62,51,8,4,13,14,8,4,2,4
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.config,DynamoDBRepositoryConfigExtension,29,84,7,5,5,22,5,7,0,6
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.config,DynamoDBRepositoryNameSpaceHandler,0,23,0,0,0,6,0,2,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.cdi,DynamoDBRepositoryBean,8,67,3,5,1,19,3,3,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.cdi,DynamoDBRepositoryExtension,192,0,22,0,37,0,16,0,5,0
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBRepositoryFactory,30,194,10,24,3,44,7,20,0,10
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBRepositoryFactory,24,200,6,28,3,44,5,22,0,10
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,FieldAndGetterReflectionEntityInformation,13,104,6,18,1,24,5,12,0,5
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl,93,149,26,10,16,29,18,10,1,9
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBEntityMetadataSupport,506,533,110,52,94,126,77,31,7,20
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBEntityMetadataSupport,428,611,93,69,75,145,70,38,4,23
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,SimpleDynamoDBCrudRepository,66,210,2,6,11,46,3,15,2,12
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,HashKeyIsIdHashKeyExtractor,0,24,0,0,0,5,0,2,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBHashAndRangeKeyMethodExtractorImpl.new ReflectionUtils.FieldCallback() {...},23,14,1,1,4,3,1,2,0,2
@@ -53,8 +53,8 @@ Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,Dy
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBHashAndRangeKeyMethodExtractorImpl.new ReflectionUtils.MethodCallback() {...},0,37,0,2,0,7,0,3,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBEntityInformation,2,2,0,0,1,1,1,1,1,1
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,SimpleDynamoDBPagingAndSortingRepository,150,6,12,0,29,2,11,1,5,1
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBIdIsHashKeyEntityInformationImpl,26,62,0,0,6,14,6,8,6,8
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,CompositeIdHashAndRangeKeyExtractor,32,9,4,0,8,3,4,1,2,1
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBIdIsHashKeyEntityInformationImpl,3,85,0,0,1,19,1,13,1,13
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,CompositeIdHashAndRangeKeyExtractor,12,29,2,2,2,9,2,3,0,3
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBIdIsHashAndRangeKeyEntityInformationImpl,21,76,0,0,5,18,5,14,5,14
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,DynamoDBHashAndRangeKeyMethodExtractorImpl,36,100,4,12,6,19,6,8,2,4
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.support,EnableScanAnnotationPermissions,16,183,7,31,4,42,5,20,0,6
@@ -69,14 +69,14 @@ Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository,DynamoDBHa
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.utils,SortHandler,3,17,0,2,1,6,0,4,0,3
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.utils,ExceptionHandler,24,56,3,1,3,8,2,3,0,3
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.utils,ExceptionHandler.new Object() {...},2,6,1,1,0,1,1,1,0,1
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQueryCriteria,323,1260,69,171,66,262,59,99,5,33
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQueryCriteria,301,1282,65,175,62,266,55,103,5,33
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBQueryCreator,5,24,1,1,1,6,1,2,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.SingleEntityExecution,0,36,0,6,0,6,0,5,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQueryCreator.new Object() {...},16,101,0,0,0,1,0,1,0,1
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.SingleEntityLimitedExecution,30,0,4,0,5,0,4,0,2,0
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.DeleteExecution,29,0,2,0,6,0,3,0,2,0
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.DeleteExecution,7,22,1,1,1,5,1,2,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBQueryLookupStrategy.CreateIfNotFoundQueryLookupStrategy,10,27,0,0,1,6,0,2,0,2
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.PagedExecution,36,121,10,10,8,27,8,7,1,4
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.PagedExecution,5,152,2,18,1,34,2,13,0,5
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBEntityWithHashAndRangeKeyCriteria,154,705,25,111,30,148,22,74,1,27
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBQueryLookupStrategy,15,34,1,5,3,6,2,4,1,1
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.CollectionExecution,30,17,5,1,7,4,4,2,1,2
@@ -86,12 +86,12 @@ Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,Abst
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBQueryLookupStrategy.new Object() {...},3,23,0,0,0,1,0,1,0,1
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery.SlicedExecution,147,0,20,0,33,0,15,0,5,0
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,PartTreeDynamoDBQuery,10,102,4,2,1,20,3,10,0,10
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery,26,87,8,10,4,21,7,8,0,6
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBEntityWithHashKeyOnlyCriteria,61,158,4,14,11,30,5,13,2,7
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBQueryMethod,11,78,5,7,2,18,6,7,1,6
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,AbstractDynamoDBQuery,21,92,7,11,3,22,6,9,0,6
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBEntityWithHashKeyOnlyCriteria,48,171,3,15,9,32,4,14,1,8
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBQueryMethod,7,82,3,9,2,18,4,9,1,6
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBCountQueryCreator,16,20,1,1,4,5,2,2,1,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.repository.query,DynamoDBQueryLookupStrategy.CreateQueryLookupStrategy,15,16,0,0,3,3,0,2,0,2
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.exception,BatchDeleteException,5,0,0,0,2,0,1,0,1,0
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.exception,BatchWriteException,0,5,0,0,0,2,0,1,0,1
 Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.domain,UnpagedPageImpl,16,171,2,14,2,38,3,25,1,19
-Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.core,DynamoDBTemplate,127,238,5,15,22,63,16,23,12,17
+Spring Data DynamoDB,org.socialsignin.spring.data.dynamodb.core,DynamoDBTemplate,84,281,5,15,16,69,12,27,8,21

@@ -71,7 +71,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria&lt;T, ID&gt; extends Abstract
 	}
 
 	protected Query&lt;Long&gt; buildFinderCountQuery(DynamoDBOperations dynamoDBOperations, boolean pageQuery) {
-<span class="nc bnc" id="L74" title="All 2 branches missed.">		if (isApplicableForGlobalSecondaryIndex()) {</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (isApplicableForGlobalSecondaryIndex()) {</span>
 
 <span class="nc" id="L76">			List&lt;Condition&gt; hashKeyConditions = getHashKeyConditions();</span>
 <span class="nc" id="L77">			QueryRequest queryRequest = buildQueryRequest(</span>
@@ -81,7 +81,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria&lt;T, ID&gt; extends Abstract
 <span class="nc" id="L81">			return new QueryRequestCountQuery(dynamoDBOperations, queryRequest);</span>
 
 		} else {
-<span class="nc" id="L84">			return new ScanExpressionCountQuery&lt;&gt;(dynamoDBOperations, clazz, buildScanExpression(), pageQuery);</span>
+<span class="fc" id="L84">			return new ScanExpressionCountQuery&lt;&gt;(dynamoDBOperations, clazz, buildScanExpression(), pageQuery);</span>
 		}
 	}
 

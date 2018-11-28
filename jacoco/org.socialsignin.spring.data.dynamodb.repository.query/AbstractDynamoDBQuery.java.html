@@ -61,8 +61,8 @@ public abstract class AbstractDynamoDBQuery&lt;T, ID&gt; implements RepositoryQu
 <span class="nc" id="L61">			throw new UnsupportedOperationException(&quot;Modifying queries not yet supported&quot;);</span>
 <span class="pc bpc" id="L62" title="1 of 2 branches missed.">		} else if (isSingleEntityResultsRestriction()) {</span>
 <span class="nc" id="L63">			return new SingleEntityLimitedExecution();</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		} else if (isDeleteQuery()) {</span>
-<span class="nc" id="L65">			return new DeleteExecution();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		} else if (isDeleteQuery()) {</span>
+<span class="fc" id="L65">			return new DeleteExecution();</span>
 		} else {
 <span class="fc" id="L67">			return new SingleEntityExecution();</span>
 		}
@@ -130,21 +130,21 @@ public abstract class AbstractDynamoDBQuery&lt;T, ID&gt; implements RepositoryQu
 <span class="fc" id="L130">		}</span>
 
 		private long scanThroughResults(Iterator&lt;T&gt; iterator, long resultsToScan) {
-<span class="nc" id="L133">			long processed = 0;</span>
-<span class="nc bnc" id="L134" title="All 4 branches missed.">			while (iterator.hasNext() &amp;&amp; processed &lt; resultsToScan) {</span>
-<span class="nc" id="L135">				iterator.next();</span>
-<span class="nc" id="L136">				processed++;</span>
+<span class="fc" id="L133">			long processed = 0;</span>
+<span class="pc bpc" id="L134" title="1 of 4 branches missed.">			while (iterator.hasNext() &amp;&amp; processed &lt; resultsToScan) {</span>
+<span class="fc" id="L135">				iterator.next();</span>
+<span class="fc" id="L136">				processed++;</span>
 			}
-<span class="nc" id="L138">			return processed;</span>
+<span class="fc" id="L138">			return processed;</span>
 		}
 
 		private List&lt;T&gt; readPageOfResultsRestrictMaxResultsIfNecessary(Iterator&lt;T&gt; iterator, int pageSize) {
 <span class="fc" id="L142">			int processed = 0;</span>
-<span class="pc bpc" id="L143" title="1 of 2 branches missed.">			int toProcess = getResultsRestrictionIfApplicable() != null</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">			int toProcess = getResultsRestrictionIfApplicable() != null</span>
 <span class="fc" id="L144">					? Math.min(pageSize, getResultsRestrictionIfApplicable())</span>
-<span class="pc" id="L145">					: pageSize;</span>
+<span class="fc" id="L145">					: pageSize;</span>
 <span class="fc" id="L146">			List&lt;T&gt; resultsPage = new ArrayList&lt;&gt;();</span>
-<span class="pc bpc" id="L147" title="1 of 4 branches missed.">			while (iterator.hasNext() &amp;&amp; processed &lt; toProcess) {</span>
+<span class="fc bfc" id="L147" title="All 4 branches covered.">			while (iterator.hasNext() &amp;&amp; processed &lt; toProcess) {</span>
 <span class="fc" id="L148">				resultsPage.add(iterator.next());</span>
 <span class="fc" id="L149">				processed++;</span>
 			}
@@ -169,9 +169,9 @@ public abstract class AbstractDynamoDBQuery&lt;T, ID&gt; implements RepositoryQu
 <span class="fc" id="L169">			Iterator&lt;T&gt; iterator = allResults.iterator();</span>
 
 			// Check if the pageable request is 'beyond' the result set
-<span class="pc bpc" id="L172" title="1 of 4 branches missed.">			if (!pageable.isUnpaged() &amp;&amp; pageable.getOffset() &gt; 0) {</span>
-<span class="nc" id="L173">				long processedCount = scanThroughResults(iterator, pageable.getOffset());</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">				if (processedCount &lt; pageable.getOffset()) {</span>
+<span class="fc bfc" id="L172" title="All 4 branches covered.">			if (!pageable.isUnpaged() &amp;&amp; pageable.getOffset() &gt; 0) {</span>
+<span class="fc" id="L173">				long processedCount = scanThroughResults(iterator, pageable.getOffset());</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">				if (processedCount &lt; pageable.getOffset()) {</span>
 <span class="nc" id="L175">					return new PageImpl&lt;&gt;(Collections.emptyList());</span>
 				}
 			}
@@ -183,7 +183,7 @@ public abstract class AbstractDynamoDBQuery&lt;T, ID&gt; implements RepositoryQu
 			// Finally wrap the result in a page -
 <span class="fc bfc" id="L184" title="All 2 branches covered.">			if (!pageable.isUnpaged()) {</span>
 				// either seek to the proper part of the result set
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">				if (getResultsRestrictionIfApplicable() != null) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">				if (getResultsRestrictionIfApplicable() != null) {</span>
 <span class="fc" id="L187">					count = Math.min(count, getResultsRestrictionIfApplicable());</span>
 				}
 
@@ -256,14 +256,14 @@ public abstract class AbstractDynamoDBQuery&lt;T, ID&gt; implements RepositoryQu
 		}
 	}
 
-<span class="nc" id="L259">	class DeleteExecution implements QueryExecution&lt;T, ID&gt; {</span>
+<span class="fc" id="L259">	class DeleteExecution implements QueryExecution&lt;T, ID&gt; {</span>
 
 		@Override
 		public Object execute(AbstractDynamoDBQuery&lt;T, ID&gt; dynamoDBQuery, Object[] values) throws BatchDeleteException {
-<span class="nc" id="L263">			List&lt;T&gt; entities = dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();</span>
-<span class="nc" id="L264">			List&lt;DynamoDBMapper.FailedBatch&gt; failedBatches = dynamoDBOperations.batchDelete(entities);</span>
-<span class="nc bnc" id="L265" title="All 2 branches missed.">			if (failedBatches.isEmpty()) {</span>
-<span class="nc" id="L266">				return entities;</span>
+<span class="fc" id="L263">			List&lt;T&gt; entities = dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();</span>
+<span class="fc" id="L264">			List&lt;DynamoDBMapper.FailedBatch&gt; failedBatches = dynamoDBOperations.batchDelete(entities);</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">			if (failedBatches.isEmpty()) {</span>
+<span class="fc" id="L266">				return entities;</span>
 			} else {
 <span class="nc" id="L268">				throw repackageToException(failedBatches, BatchDeleteException.class);</span>
 			}

@@ -70,11 +70,11 @@ public class DynamoDBQueryMethod&lt;T, ID&gt; extends QueryMethod {
 	}
 
 	public boolean isScanEnabled() {
-<span class="pc bpc" id="L73" title="2 of 4 branches missed.">		return scanEnabledForRepository || method.isAnnotationPresent(EnableScan.class);</span>
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">		return scanEnabledForRepository || method.isAnnotationPresent(EnableScan.class);</span>
 	}
 
 	public boolean isScanCountEnabled() {
-<span class="pc bpc" id="L77" title="2 of 4 branches missed.">		return scanCountEnabledForRepository || method.isAnnotationPresent(EnableScanCount.class);</span>
+<span class="pc bpc" id="L77" title="1 of 4 branches missed.">		return scanCountEnabledForRepository || method.isAnnotationPresent(EnableScanCount.class);</span>
 	}
 
 	/*

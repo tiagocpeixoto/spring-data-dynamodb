@@ -191,9 +191,9 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 
 	@Override
 	public &lt;T&gt; PaginatedScanList&lt;T&gt; scan(Class&lt;T&gt; domainClass, DynamoDBScanExpression scanExpression) {
-<span class="nc" id="L194">		PaginatedScanList&lt;T&gt; results = dynamoDBMapper.scan(domainClass, scanExpression);</span>
-<span class="nc" id="L195">		maybeEmitEvent(results, AfterScanEvent::new);</span>
-<span class="nc" id="L196">		return results;</span>
+<span class="fc" id="L194">		PaginatedScanList&lt;T&gt; results = dynamoDBMapper.scan(domainClass, scanExpression);</span>
+<span class="fc" id="L195">		maybeEmitEvent(results, AfterScanEvent::new);</span>
+<span class="fc" id="L196">		return results;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
@@ -235,19 +235,19 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 
 	@Override
 	public List&lt;FailedBatch&gt; batchDelete(Iterable&lt;?&gt; entities) {
-<span class="pc" id="L238">		entities.forEach(it -&gt; maybeEmitEvent(it, BeforeDeleteEvent::new));</span>
+<span class="fc" id="L238">		entities.forEach(it -&gt; maybeEmitEvent(it, BeforeDeleteEvent::new));</span>
 
 <span class="fc" id="L240">		List&lt;FailedBatch&gt; result = dynamoDBMapper.batchDelete(entities);</span>
 
-<span class="pc" id="L242">		entities.forEach(it -&gt; maybeEmitEvent(it, AfterDeleteEvent::new));</span>
+<span class="fc" id="L242">		entities.forEach(it -&gt; maybeEmitEvent(it, AfterDeleteEvent::new));</span>
 <span class="fc" id="L243">		return result;</span>
 	}
 
 	@Override
 	public &lt;T&gt; PaginatedQueryList&lt;T&gt; query(Class&lt;T&gt; clazz, QueryRequest queryRequest) {
-<span class="nc" id="L248">		QueryResult queryResult = amazonDynamoDB.query(queryRequest);</span>
-<span class="nc" id="L249">		return new PaginatedQueryList&lt;T&gt;(dynamoDBMapper, clazz, amazonDynamoDB, queryRequest, queryResult,</span>
-<span class="nc" id="L250">				dynamoDBMapperConfig.getPaginationLoadingStrategy(), dynamoDBMapperConfig);</span>
+<span class="fc" id="L248">		QueryResult queryResult = amazonDynamoDB.query(queryRequest);</span>
+<span class="fc" id="L249">		return new PaginatedQueryList&lt;T&gt;(dynamoDBMapper, clazz, amazonDynamoDB, queryRequest, queryResult,</span>
+<span class="fc" id="L250">				dynamoDBMapperConfig.getPaginationLoadingStrategy(), dynamoDBMapperConfig);</span>
 	}
 
 	@Override

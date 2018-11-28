@@ -51,7 +51,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 
 <span class="fc" id="L52">		String thisSpecVersion = DynamoDBRepositoryFactory.class.getPackage().getSpecificationVersion();</span>
 <span class="fc" id="L53">		String thisImplVersion = DynamoDBRepositoryFactory.class.getPackage().getImplementationVersion();</span>
-<span class="pc bpc" id="L54" title="3 of 4 branches missed.">		if (thisImplVersion == null || thisSpecVersion == null) {</span>
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">		if (thisImplVersion == null || thisSpecVersion == null) {</span>
 <span class="fc" id="L55">			thisSpecVersion = DEVELOPMENT;</span>
 <span class="fc" id="L56">			thisImplVersion = DEVELOPMENT;</span>
 		}
@@ -64,7 +64,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 <span class="fc" id="L64">		LOGGER.info(&quot;Platform Details:             {} {}&quot;, System.getProperty(&quot;os.name&quot;),</span>
 <span class="fc" id="L65">				System.getProperty(&quot;os.version&quot;));</span>
 
-<span class="pc bpc" id="L67" title="3 of 4 branches missed.">		if (!DEVELOPMENT.equals(thisImplVersion) &amp;&amp; !isCompatible(springDataVersion, thisSpecVersion)) {</span>
+<span class="pc bpc" id="L67" title="1 of 4 branches missed.">		if (!DEVELOPMENT.equals(thisImplVersion) &amp;&amp; !isCompatible(springDataVersion, thisSpecVersion)) {</span>
 <span class="nc" id="L68">			LOGGER.warn(</span>
 					&quot;This Spring Data DynamoDB implementation might not be compatible with the available Spring Data classes on the classpath!&quot;
 <span class="nc" id="L70">							+ System.getProperty(&quot;line.separator&quot;)</span>

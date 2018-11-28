@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
 
 	@Override
 	public String getRepositoryFactoryBeanClassName() {
-<span class="nc" id="L48">		return DynamoDBRepositoryFactoryBean.class.getName();</span>
+<span class="fc" id="L48">		return DynamoDBRepositoryFactoryBean.class.getName();</span>
 	}
 
 	@Override
@@ -69,14 +69,14 @@ import org.w3c.dom.Element;
 	@Override
 	public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
 
-<span class="nc" id="L72">		Element element = config.getElement();</span>
+<span class="fc" id="L72">		Element element = config.getElement();</span>
 
-<span class="nc" id="L74">		ParsingUtils.setPropertyReference(builder, element, AMAZON_DYNAMODB_REF, &quot;amazonDynamoDB&quot;);</span>
-<span class="nc" id="L75">		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_MAPPER_CONFIG_REF, &quot;dynamoDBMapperConfig&quot;);</span>
-<span class="nc" id="L76">		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_OPERATIONS_REF, &quot;dynamoDBOperations&quot;);</span>
-<span class="nc" id="L77">		ParsingUtils.setPropertyReference(builder, element, MAPPING_CONTEXT_REF, &quot;dynamoDBMappingContext&quot;);</span>
+<span class="fc" id="L74">		ParsingUtils.setPropertyReference(builder, element, AMAZON_DYNAMODB_REF, &quot;amazonDynamoDB&quot;);</span>
+<span class="fc" id="L75">		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_MAPPER_CONFIG_REF, &quot;dynamoDBMapperConfig&quot;);</span>
+<span class="fc" id="L76">		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_OPERATIONS_REF, &quot;dynamoDBOperations&quot;);</span>
+<span class="fc" id="L77">		ParsingUtils.setPropertyReference(builder, element, MAPPING_CONTEXT_REF, &quot;dynamoDBMappingContext&quot;);</span>
 
-<span class="nc" id="L79">	}</span>
+<span class="fc" id="L79">	}</span>
 
 	private void postProcess(BeanDefinitionBuilder builder, String amazonDynamoDBRef, String dynamoDBMapperConfigRef,
 			String dynamoDBOperationsRef, String dynamoDBMappingContextRef) {
@@ -100,8 +100,8 @@ import org.w3c.dom.Element;
 			}
 		}
 
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">		if (StringUtils.hasText(dynamoDBMappingContextRef)) {</span>
-<span class="nc" id="L104">			builder.addPropertyReference(&quot;dynamoDBMappingContext&quot;, dynamoDBMappingContextRef);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if (StringUtils.hasText(dynamoDBMappingContextRef)) {</span>
+<span class="fc" id="L104">			builder.addPropertyReference(&quot;dynamoDBMappingContext&quot;, dynamoDBMappingContextRef);</span>
 		} else {
 <span class="fc" id="L106">			builder.addPropertyValue(&quot;dynamoDBMappingContext&quot;, new DynamoDBMappingContext());</span>
 		}

@@ -125,9 +125,9 @@ public abstract class AbstractDynamoDBQueryCriteria&lt;T, ID&gt; implements Dyna
 
 <span class="fc" id="L126">			queryRequest.setKeyConditions(keyConditions);</span>
 			// Might be overwritten in the actual Query classes
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">			if (projection.isPresent()) {</span>
-<span class="nc" id="L129">				queryRequest.setSelect(Select.SPECIFIC_ATTRIBUTES);</span>
-<span class="nc" id="L130">				queryRequest.setProjectionExpression(projection.get());</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (projection.isPresent()) {</span>
+<span class="fc" id="L129">				queryRequest.setSelect(Select.SPECIFIC_ATTRIBUTES);</span>
+<span class="fc" id="L130">				queryRequest.setProjectionExpression(projection.get());</span>
 			} else {
 <span class="fc" id="L132">				queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);</span>
 			}
@@ -366,7 +366,7 @@ public abstract class AbstractDynamoDBQueryCriteria&lt;T, ID&gt; implements Dyna
 
 <span class="fc" id="L367">		int attributeConditionCount = attributeConditions.keySet().size();</span>
 <span class="pc bpc" id="L368" title="1 of 6 branches missed.">		boolean attributeConditionsAppropriate = hasIndexHashKeyEqualCondition()</span>
-<span class="pc bpc" id="L369" title="1 of 2 branches missed.">				&amp;&amp; (attributeConditionCount == 1 || (attributeConditionCount == 2 &amp;&amp; hasIndexRangeKeyCondition()));</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">				&amp;&amp; (attributeConditionCount == 1 || (attributeConditionCount == 2 &amp;&amp; hasIndexRangeKeyCondition()));</span>
 <span class="pc bpc" id="L370" title="1 of 6 branches missed.">		return global &amp;&amp; (attributeConditionCount == 0 || attributeConditionsAppropriate)</span>
 <span class="pc bpc" id="L371" title="1 of 2 branches missed.">				&amp;&amp; comparisonOperatorsPermittedForQuery();</span>
 
@@ -646,8 +646,8 @@ public abstract class AbstractDynamoDBQueryCriteria&lt;T, ID&gt; implements Dyna
 
 <span class="fc" id="L647">		List&lt;AttributeValue&gt; attributeValueList = new ArrayList&lt;&gt;(1);</span>
 <span class="fc bfc" id="L648" title="All 2 branches covered.">		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName, o) : o;</span>
-<span class="pc bpc" id="L649" title="1 of 2 branches missed.">		if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {</span>
-<span class="nc" id="L650">			attributeValueList.add((AttributeValue) attributeValue);</span>
+<span class="fc bfc" id="L649" title="All 2 branches covered.">		if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {</span>
+<span class="fc" id="L650">			attributeValueList.add((AttributeValue) attributeValue);</span>
 		} else {
 <span class="fc bfc" id="L652" title="All 4 branches covered.">			boolean marshalled = !alreadyMarshalledIfRequired &amp;&amp; attributeValue != o</span>
 <span class="pc bpc" id="L653" title="1 of 2 branches missed.">					&amp;&amp; !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);</span>
@@ -668,8 +668,8 @@ public abstract class AbstractDynamoDBQueryCriteria&lt;T, ID&gt; implements Dyna
 <span class="fc" id="L668">		boolean marshalled = false;</span>
 <span class="fc bfc" id="L669" title="All 2 branches covered.">		for (Object object : o) {</span>
 <span class="fc" id="L670">			Object attributeValue = getPropertyAttributeValue(propertyName, object);</span>
-<span class="pc bpc" id="L671" title="1 of 2 branches missed.">			if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {</span>
-<span class="nc" id="L672">				attributeValueList.add((AttributeValue) attributeValue);</span>
+<span class="fc bfc" id="L671" title="All 2 branches covered.">			if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {</span>
+<span class="fc" id="L672">				attributeValueList.add((AttributeValue) attributeValue);</span>
 			} else {
 <span class="pc bpc" id="L674" title="1 of 2 branches missed.">				if (attributeValue != null) {</span>
 <span class="pc bpc" id="L675" title="1 of 2 branches missed.">					marshalled = attributeValue != object</span>

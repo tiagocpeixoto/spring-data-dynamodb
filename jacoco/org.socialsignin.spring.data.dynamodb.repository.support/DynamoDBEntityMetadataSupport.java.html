@@ -57,7 +57,7 @@ public class DynamoDBEntityMetadataSupport&lt;T, ID&gt; implements DynamoDBHashK
 
 	@Override
 	public String getDynamoDBTableName() {
-<span class="nc" id="L60">		return dynamoDBTableName;</span>
+<span class="fc" id="L60">		return dynamoDBTableName;</span>
 	}
 
 	/**
@@ -229,56 +229,56 @@ public class DynamoDBEntityMetadataSupport&lt;T, ID&gt; implements DynamoDBHashK
 <span class="nc bnc" id="L229" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {</span>
 <span class="nc" id="L230">				return Optional.of(method.getAnnotation(DynamoDBAttribute.class).attributeName());</span>
 			}
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">			if (method.getAnnotation(DynamoDBHashKey.class) != null</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">			if (method.getAnnotation(DynamoDBHashKey.class) != null</span>
 <span class="pc bpc" id="L233" title="1 of 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {</span>
 <span class="fc" id="L234">				return Optional.of(method.getAnnotation(DynamoDBHashKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L236" title="All 2 branches missed.">			if (method.getAnnotation(DynamoDBRangeKey.class) != null</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">			if (method.getAnnotation(DynamoDBRangeKey.class) != null</span>
 <span class="nc bnc" id="L237" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {</span>
 <span class="nc" id="L238">				return Optional.of(method.getAnnotation(DynamoDBRangeKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L240" title="All 2 branches missed.">			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null</span>
-<span class="nc bnc" id="L241" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {</span>
 <span class="nc" id="L242">				return Optional.of(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L244" title="All 2 branches missed.">			if (method.getAnnotation(DynamoDBIndexHashKey.class) != null</span>
-<span class="nc bnc" id="L245" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">			if (method.getAnnotation(DynamoDBIndexHashKey.class) != null</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {</span>
 <span class="nc" id="L246">				return Optional.of(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L248" title="All 2 branches missed.">			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null</span>
 <span class="nc bnc" id="L249" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {</span>
 <span class="nc" id="L250">				return Optional.of(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName());</span>
 			}
 		}
 
-<span class="nc" id="L254">		Field field = findField(propertyName);</span>
-<span class="nc bnc" id="L255" title="All 2 branches missed.">		if (field != null) {</span>
-<span class="nc bnc" id="L256" title="All 2 branches missed.">			if (field.getAnnotation(DynamoDBAttribute.class) != null</span>
+<span class="fc" id="L254">		Field field = findField(propertyName);</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">		if (field != null) {</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">			if (field.getAnnotation(DynamoDBAttribute.class) != null</span>
 <span class="nc bnc" id="L257" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(field.getAnnotation(DynamoDBAttribute.class).attributeName())) {</span>
 <span class="nc" id="L258">				return Optional.of(field.getAnnotation(DynamoDBAttribute.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L260" title="All 2 branches missed.">			if (field.getAnnotation(DynamoDBHashKey.class) != null</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">			if (field.getAnnotation(DynamoDBHashKey.class) != null</span>
 <span class="nc bnc" id="L261" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(field.getAnnotation(DynamoDBHashKey.class).attributeName())) {</span>
 <span class="nc" id="L262">				return Optional.of(field.getAnnotation(DynamoDBHashKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L264" title="All 2 branches missed.">			if (field.getAnnotation(DynamoDBRangeKey.class) != null</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">			if (field.getAnnotation(DynamoDBRangeKey.class) != null</span>
 <span class="nc bnc" id="L265" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(field.getAnnotation(DynamoDBRangeKey.class).attributeName())) {</span>
 <span class="nc" id="L266">				return Optional.of(field.getAnnotation(DynamoDBRangeKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L268" title="All 2 branches missed.">			if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">			if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null</span>
 <span class="nc bnc" id="L269" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {</span>
 <span class="nc" id="L270">				return Optional.of(field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L272" title="All 2 branches missed.">			if (field.getAnnotation(DynamoDBIndexHashKey.class) != null</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">			if (field.getAnnotation(DynamoDBIndexHashKey.class) != null</span>
 <span class="nc bnc" id="L273" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(field.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {</span>
 <span class="nc" id="L274">				return Optional.of(field.getAnnotation(DynamoDBIndexHashKey.class).attributeName());</span>
 			}
-<span class="nc bnc" id="L276" title="All 2 branches missed.">			if (field.getAnnotation(DynamoDBVersionAttribute.class) != null</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">			if (field.getAnnotation(DynamoDBVersionAttribute.class) != null</span>
 <span class="nc bnc" id="L277" title="All 2 branches missed.">					&amp;&amp; !StringUtils.isEmpty(field.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {</span>
 <span class="nc" id="L278">				return Optional.of(field.getAnnotation(DynamoDBVersionAttribute.class).attributeName());</span>
 			}
 		}
-<span class="nc" id="L281">		return Optional.empty();</span>
+<span class="fc" id="L281">		return Optional.empty();</span>
 
 	}
 
@@ -325,8 +325,8 @@ public class DynamoDBEntityMetadataSupport&lt;T, ID&gt; implements DynamoDBHashK
 
 <span class="pc bpc" id="L326" title="1 of 2 branches missed.">		if (annotation == null) {</span>
 <span class="fc" id="L327">			Field field = findField(propertyName);</span>
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">			if (field != null) {</span>
-<span class="nc" id="L329">				annotation = field.getAnnotation(DynamoDBTypeConverted.class);</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">			if (field != null) {</span>
+<span class="fc" id="L329">				annotation = field.getAnnotation(DynamoDBTypeConverted.class);</span>
 			}
 		}
 
@@ -456,7 +456,7 @@ public class DynamoDBEntityMetadataSupport&lt;T, ID&gt; implements DynamoDBHashK
 
 	@Override
 	public Map&lt;String, String[]&gt; getGlobalSecondaryIndexNamesByPropertyName() {
-<span class="nc" id="L459">		return globalSecondaryIndexNames;</span>
+<span class="fc" id="L459">		return globalSecondaryIndexNames;</span>
 	}
 
 	@Override
@@ -466,7 +466,7 @@ public class DynamoDBEntityMetadataSupport&lt;T, ID&gt; implements DynamoDBHashK
 
 	@Override
 	public boolean isGlobalIndexRangeKeyProperty(String propertyName) {
-<span class="nc" id="L469">		return globalIndexRangeKeyPropertyNames.contains(propertyName);</span>
+<span class="fc" id="L469">		return globalIndexRangeKeyPropertyNames.contains(propertyName);</span>
 	}
 
 }

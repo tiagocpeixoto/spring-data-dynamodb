@@ -93,7 +93,7 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl&lt;T, ID&gt; extends Field
 
 	@Override
 	public DynamoDBTypeConverter&lt;?, ?&gt; getTypeConverterForProperty(String propertyName) {
-<span class="nc" id="L96">		return metadata.getTypeConverterForProperty(propertyName);</span>
+<span class="fc" id="L96">		return metadata.getTypeConverterForProperty(propertyName);</span>
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl&lt;T, ID&gt; extends Field
 
 	@Override
 	public String getDynamoDBTableName() {
-<span class="nc" id="L106">		return metadata.getDynamoDBTableName();</span>
+<span class="fc" id="L106">		return metadata.getDynamoDBTableName();</span>
 	}
 
 	@Override
@@ -113,17 +113,17 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl&lt;T, ID&gt; extends Field
 
 	@Override
 	public Map&lt;String, String[]&gt; getGlobalSecondaryIndexNamesByPropertyName() {
-<span class="nc" id="L116">		return metadata.getGlobalSecondaryIndexNamesByPropertyName();</span>
+<span class="fc" id="L116">		return metadata.getGlobalSecondaryIndexNamesByPropertyName();</span>
 	}
 
 	@Override
 	public boolean isGlobalIndexHashKeyProperty(String propertyName) {
-<span class="nc" id="L121">		return metadata.isGlobalIndexHashKeyProperty(propertyName);</span>
+<span class="fc" id="L121">		return metadata.isGlobalIndexHashKeyProperty(propertyName);</span>
 	}
 
 	@Override
 	public boolean isGlobalIndexRangeKeyProperty(String propertyName) {
-<span class="nc" id="L126">		return metadata.isGlobalIndexRangeKeyProperty(propertyName);</span>
+<span class="fc" id="L126">		return metadata.isGlobalIndexRangeKeyProperty(propertyName);</span>
 	}
 
 }
