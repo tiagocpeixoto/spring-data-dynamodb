@@ -16,7 +16,6 @@
 package org.socialsignin.spring.data.dynamodb.repository.cdi;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +72,7 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 		Bean<X> bean = processBean.getBean();
 		for (Type type : bean.getTypes()) {
 			// Check if the bean is a AmazonDynamoDB
-			if (type instanceof Class<?> && AmazonDynamoDBClient.class.isAssignableFrom((Class<?>) type)) {
+			if (type instanceof Class<?> && AmazonDynamoDB.class.isAssignableFrom((Class<?>) type)) {
 				Set<Annotation> qualifiers = new HashSet<Annotation>(bean.getQualifiers());
 				if (bean.isAlternative() || !amazonDynamoDBs.containsKey(qualifiers)) {
 					LOGGER.debug("Discovered '{}' with qualifiers {}.", AmazonDynamoDB.class.getName(), qualifiers);
@@ -141,7 +140,7 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 		if (amazonDynamoDBBean == null) {
 			throw new UnsatisfiedResolutionException(
 					String.format("Unable to resolve a bean for '%s' with qualifiers %s.",
-							AmazonDynamoDBClient.class.getName(), qualifiers));
+							AmazonDynamoDB.class.getName(), qualifiers));
 		}
 
 		Bean<DynamoDBOperations> dynamoDBOperationsBean = dynamoDBOperationss.get(qualifiers);

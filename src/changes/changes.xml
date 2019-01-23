@@ -29,8 +29,15 @@
       </action>
       <action dev="boostschicken" type="add" date="2018-10-28">
         Updated Mockito to improve test coverage
+      </action>
       <action dev="ryonday" issue="218" type="fix" date="2018-11-09">
         Update to Spring-Data 2.1.2.RELEASE and Spring Framework 5.1.2.RELEASE
+      </action>
+      <action dev="derjust" issue="17" type="add" date="2019-01-22">
+      	Create table when not exist
+      </action>
+      <action dev="derjust" issue="228" type="fix" date="2019-01-22">
+      	Wrong class in CDI Extensions Check
       </action>
     </release>
     <release version="5.0.4" date="2018-11-27" description="Maintenance &amp; security release">
