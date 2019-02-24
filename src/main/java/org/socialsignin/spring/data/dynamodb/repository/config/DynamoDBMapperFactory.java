@@ -35,8 +35,7 @@ public class DynamoDBMapperFactory implements FactoryBean<DynamoDBMapper> {
 	}
 
 	@Override
-	public synchronized DynamoDBMapper getObject() throws Exception {
-		// fix issue #230
+	public DynamoDBMapper getObject() throws Exception {
 		return new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
 	}
 
