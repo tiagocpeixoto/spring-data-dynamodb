@@ -18,15 +18,18 @@ package org.socialsignin.spring.data.dynamodb.repository.config;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class DynamoDBMapperFactory implements FactoryBean<DynamoDBMapper>, BeanFactoryAware {
+public class DynamoDBMapperFactory implements FactoryBean<DynamoDBMapper> {
 
 	// fix issue #230
-	private BeanFactory beanFactory;
+	@Autowired
+	private AmazonDynamoDB amazonDynamoDB;
+
+	// fix issue #230
+	@Autowired
+	private DynamoDBMapperConfig dynamoDBMapperConfig;
 
 	public DynamoDBMapperFactory() {
 	}
@@ -34,21 +37,11 @@ public class DynamoDBMapperFactory implements FactoryBean<DynamoDBMapper>, BeanF
 	@Override
 	public synchronized DynamoDBMapper getObject() throws Exception {
 		// fix issue #230
-		AmazonDynamoDB amazonDynamoDB = beanFactory.getBean(AmazonDynamoDB.class);
-		DynamoDBMapperConfig dynamoDBMapperConfig = beanFactory.getBean(DynamoDBMapperConfig.class);
-
 		return new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
-		// end -- fix issue #230
 	}
 
 	@Override
 	public Class<?> getObjectType() {
 		return DynamoDBMapper.class;
-	}
-
-	// fix issue #230
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
 	}
 }
