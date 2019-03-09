@@ -15,6 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
 import org.socialsignin.spring.data.dynamodb.repository.util.DynamoDBMappingContextProcessor;
@@ -43,6 +44,7 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 	private DynamoDBOperations dynamoDBOperations;
 	private Entity2DynamoDBTableSynchronizer<S, ID> tableSynchronizer;
 	private DynamoDBMappingContextProcessor<S, ID> dynamoDBMappingContextProcessor;
+	private DynamoDBMapperConfig dynamoDBMapperConfig;
 
 	public DynamoDBRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
 		super(repositoryInterface);
@@ -78,5 +80,9 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 	@Required
 	public void setDynamoDBMappingContext(DynamoDBMappingContext dynamoDBMappingContext) {
 		setMappingContext(dynamoDBMappingContext);
+	}
+
+	public void setDynamoDBMapperConfig(DynamoDBMapperConfig dynamoDBMapperConfig) {
+		this.dynamoDBMapperConfig = dynamoDBMapperConfig;
 	}
 }
