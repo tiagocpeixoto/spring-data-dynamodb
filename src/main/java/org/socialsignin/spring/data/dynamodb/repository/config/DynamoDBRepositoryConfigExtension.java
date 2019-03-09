@@ -139,9 +139,11 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 			builder.addPropertyReference("dynamoDBOperations", dynamoDBOperationsRef);
 
-			if (StringUtils.hasText(dynamoDBMapperConfigRef)) {
-				builder.addPropertyReference("dynamoDBMapperConfig", dynamoDBMapperConfigRef);
-			}
+			/*
+			 * Fix issue #233 if (StringUtils.hasText(dynamoDBMapperConfigRef)) {
+			 * builder.addPropertyReference("dynamoDBMapperConfig",
+			 * dynamoDBMapperConfigRef); }
+			 */
 		}
 
 		if (!StringUtils.hasText(dynamoDBMappingContextRef)) {
