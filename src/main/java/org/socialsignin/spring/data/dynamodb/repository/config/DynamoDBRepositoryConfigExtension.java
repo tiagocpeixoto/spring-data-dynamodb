@@ -107,7 +107,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	private Map<String, String> dynamoDBTemplateCache = new HashMap<>();
 	private void postProcess(BeanDefinitionBuilder builder, String repositoryName, String amazonDynamoDBRef,
-			String dynamoDBMapperConfigRef, String dynamoDBOperationsRef, String dynamoDBMappingContextRef) {
+							 String dynamoDBMapperConfigRef, String dynamoDBOperationsRef, String dynamoDBMappingContextRef) {
 
 		if (StringUtils.hasText(dynamoDBOperationsRef)) {
 			builder.addPropertyReference("dynamoDBOperations", dynamoDBOperationsRef);
@@ -130,7 +130,16 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 						.computeIfAbsent(getBeanNameWithModulePrefix("DynamoDBTemplate-" + dynamoDBRef), ref -> {
 							BeanDefinitionBuilder dynamoDBTemplateBuilder = BeanDefinitionBuilder
 									.genericBeanDefinition(DynamoDBTemplate.class);
+							// AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper,
+							// DynamoDBMapperConfig dynamoDBMapperConfig
 							dynamoDBTemplateBuilder.addConstructorArgReference(dynamoDBRef);
+							dynamoDBTemplateBuilder.addConstructorArgReference(this.dynamoDBMapperName);
+
+							if (StringUtils.hasText(dynamoDBMapperConfigRef)) {
+								dynamoDBTemplateBuilder.addConstructorArgReference(dynamoDBMapperConfigRef);
+							} else {
+								dynamoDBTemplateBuilder.addConstructorArgReference(this.dynamoDBMapperConfigName);
+							}
 
 							registry.registerBeanDefinition(ref, dynamoDBTemplateBuilder.getBeanDefinition());
 							return ref;
@@ -138,12 +147,6 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 			}
 
 			builder.addPropertyReference("dynamoDBOperations", dynamoDBOperationsRef);
-
-            /* Fix issue #233 - these statements were commented on as they are not supposed to be necessary */
-//            if (StringUtils.hasText(dynamoDBMapperConfigRef)) {
-//                builder.addPropertyReference("dynamoDBMapperConfig",
-//                        dynamoDBMapperConfigRef);
-//            }
 		}
 
 		if (!StringUtils.hasText(dynamoDBMappingContextRef)) {
@@ -159,7 +162,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	}
 
 	protected void registerAndSetPostProcessingBeans(BeanDefinitionBuilder builder, BeanDefinitionRegistry registry,
-			String dynamoDBMappingContextRef) {
+													 String dynamoDBMappingContextRef) {
 		String tableSynchronizerName = registerEntity2DynamoDBTableSynchronizer(registry, dynamoDBMappingContextRef);
 		builder.addPropertyReference("entity2DynamoDBTableSynchronizer", tableSynchronizerName);
 
@@ -170,7 +173,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	private final Map<String, String> entity2DynamoDBTableSynchronizerCache = new ConcurrentHashMap<>();
 	private String registerEntity2DynamoDBTableSynchronizer(BeanDefinitionRegistry registry,
-			String dynamoDBMappingContextRef) {
+															String dynamoDBMappingContextRef) {
 		assert registry != null;
 
 		return entity2DynamoDBTableSynchronizerCache.computeIfAbsent(dynamoDBMappingContextRef, ref -> {
@@ -186,8 +189,12 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	}
 
 	private final Map<String, String> dynamoDBMappingContextProcessorCache = new ConcurrentHashMap<>();
+
+	private String dynamoDBMapperName;
+
+	private String dynamoDBMapperConfigName;
 	private String registerDynamoDBMappingContextProcessor(BeanDefinitionRegistry registry,
-			String dynamoDBMappingContextRef) {
+														   String dynamoDBMappingContextRef) {
 		assert registry != null;
 
 		return dynamoDBMappingContextProcessorCache.computeIfAbsent(dynamoDBMappingContextRef, ref -> {
@@ -222,7 +229,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	@Override
 	public void registerBeansForRoot(BeanDefinitionRegistry registry,
-			RepositoryConfigurationSource configurationSource) {
+									 RepositoryConfigurationSource configurationSource) {
 		super.registerBeansForRoot(registry, configurationSource);
 
 		// Store for later to be used by #postProcess, too
@@ -231,16 +238,16 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 		// Fix issue #233
 		Optional dynamoDBMapperConfigRef = configurationSource.getAttribute("dynamoDBMapperConfigRef");
 		if (!dynamoDBMapperConfigRef.isPresent()) {
-			BeanDefinitionBuilder dynamoDBMapperConfigBuiilder = BeanDefinitionBuilder
+			BeanDefinitionBuilder dynamoDBMapperConfigBuilder = BeanDefinitionBuilder
 					.genericBeanDefinition(DynamoDBMapperConfigFactory.class);
 			registry.registerBeanDefinition(getBeanNameWithModulePrefix("DynamoDBMapperConfig"),
-					dynamoDBMapperConfigBuiilder.getBeanDefinition());
+					dynamoDBMapperConfigBuilder.getBeanDefinition());
 		}
 
+		this.dynamoDBMapperName = getBeanNameWithModulePrefix("DynamoDBMapper");
 		BeanDefinitionBuilder dynamoDBMapperBuilder = BeanDefinitionBuilder
 				.genericBeanDefinition(DynamoDBMapperFactory.class);
-		registry.registerBeanDefinition(getBeanNameWithModulePrefix("DynamoDBMapper"),
-				dynamoDBMapperBuilder.getBeanDefinition());
+		registry.registerBeanDefinition(this.dynamoDBMapperName, dynamoDBMapperBuilder.getBeanDefinition());
 	}
 
 	protected String getBeanNameWithModulePrefix(String baseBeanName) {
