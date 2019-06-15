@@ -59,6 +59,8 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	private BeanDefinitionRegistry registry;
 	private String defaultDynamoDBMappingContext;
+    private String dynamoDBMapperName;
+    private String dynamoDBMapperConfigName;
 
 	@Override
 	public String getRepositoryFactoryBeanClassName() {
@@ -190,9 +192,6 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	private final Map<String, String> dynamoDBMappingContextProcessorCache = new ConcurrentHashMap<>();
 
-	private String dynamoDBMapperName;
-
-	private String dynamoDBMapperConfigName;
 	private String registerDynamoDBMappingContextProcessor(BeanDefinitionRegistry registry,
 														   String dynamoDBMappingContextRef) {
 		assert registry != null;
